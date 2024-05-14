@@ -1,0 +1,920 @@
+Index: Telegram/bot_dialogs/register.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import requests\nfrom aiogram import F, Bot\nfrom aiogram.exceptions import TelegramBadRequest\nfrom aiogram.types import CallbackQuery\nfrom aiogram_dialog import Dialog, LaunchMode, Window, DialogManager, StartMode\nfrom aiogram_dialog.widgets.input import TextInput\nfrom aiogram_dialog.widgets.kbd import Button, SwitchTo, Column, Select, Url\nfrom aiogram_dialog.widgets.text import Const, Format\n\n# from Telegram.bot import bot\nfrom Telegram.bot_dialogs.data import FINISHED_KEY, choice_KEY, genre_KEY, main_instrument_KEY, choice_instrument_KEY, \\\n    Instrument_KEY, Choice_group_KEY, isAlredyRegister, Data_update_list, tg_id_user, Istr\nfrom Telegram.bot_dialogs.getter import getter_profil\nfrom Telegram.bot_dialogs.states import Register, Menu\nfrom Telegram.bd import create_row\nfrom Telegram.db_user_info import create_row_userinfo\n\nbot = Bot(token=\"6752526100:AAFCSA3zE7LTV88AP68ozKPd90DxJ14Upks\")\n\n\ndef id_getter(istr: Istr) -> str:\n    return istr.id\n\nCANCEL_EDIT = SwitchTo(\n    Const(\"Отменить редактирование\"),\n    when=F[\"dialog_data\"][FINISHED_KEY],\n    id=\"cnl_edt\",\n    state=Register.preview,\n)\n\nasync def get_call_data(dialog_manager: DialogManager, **kwargs):\n    return dialog_manager.dialog_data\n# async def Choice_button(event, widget, dialog_manager: DialogManager, *_):\n#     # await dialog_manager\n#     t = dialog_manager.dialog_data..get(\"\")\n#     t = dialog_manager.load_data()\n\n# async def next_or_end(event_from_user: CallbackQuery, widget, dialog_manager: DialogManager, *_):\n#     # print(event_from_user.from_user.id)\n#     # print(event_from_user.u)\n#     # id_user = dialog_manager.dialog_data[\"user_id\"]\n\n# async def step_choice(event, widget, dialog_manager: DialogManager,item_id: str, *_):\n#     dialog_manager.dialog_data[choice_KEY] = item_id\n#     if dialog_manager.dialog_data.get(FINISHED_KEY):\n#         await dialog_manager.switch_to(Wizard.preview)\n#     else:\n#         await dialog_manager.switch_to(Wizard.name)\n\n# async def step_go_edit_akkount(callback: CallbackQuery, dialog_manager: DialogManager,*_):\n#     dialog_manager.dialog_data[isAlredyRegister] = True\n#     # dialog_manager.dialog_data[choice_KEY] = item_id\n#     data = get_line_user(callback.from_user.id)\n#     dialog_manager.dialog_data[Data_update_list] = data\n#     await dialog_manager.start(Register.preview)\nasync def step_name(callback: CallbackQuery, widget, dialog_manager: DialogManager,item_id: str, *_):\n    # dialog_manager.dialog_data[choice_KEY] = item_id\n    if len(item_id) <= 30:\n        create_row_userinfo(dialog_manager.event.from_user.id, dialog_manager.event.from_user.username)\n        try:\n            dialog_manager.dialog_data[Data_update_list][1] = item_id\n        except Exception as e:\n            print(e)\n        try:\n            if dialog_manager.dialog_data[FINISHED_KEY]:\n                await dialog_manager.switch_to(Register.preview)\n            else:\n                dialog_manager.dialog_data[FINISHED_KEY] = False\n                await dialog_manager.switch_to(Register.city)\n        except:\n            dialog_manager.dialog_data[FINISHED_KEY] = False\n            await dialog_manager.switch_to(Register.city)\n    else:\n        await callback.answer(\"Введите имя по короче меньше 30 сиволов включая побелы\")\n        await dialog_manager.switch_to(Register.name)\n\nasync def step_city(callback: CallbackQuery, widget, dialog_manager: DialogManager,item_id: str, *_):\n    if len(item_id) <= 60:\n        if dialog_manager.dialog_data[FINISHED_KEY]:\n            await dialog_manager.switch_to(Register.preview)\n        else:\n            await dialog_manager.switch_to(Register.genre)\n    else:\n        await callback.answer(\"Введите город по короче меньше 60 сиволов включая побелы\")\n        await dialog_manager.switch_to(Register.city)\nasync def step_genre(event, widget, dialog_manager: DialogManager, item_id: str, *_):\n    dialog_manager.dialog_data[genre_KEY] = item_id\n    if dialog_manager.dialog_data[FINISHED_KEY]:\n        await dialog_manager.switch_to(Register.preview)\n    else:\n        await dialog_manager.switch_to(Register.first_instrument)\n\nasync def step_first_instrument(event, widget, dialog_manager: DialogManager, item_id: str, *_):\n    dialog_manager.dialog_data[main_instrument_KEY] = item_id\n    if dialog_manager.dialog_data[FINISHED_KEY]:\n        await dialog_manager.switch_to(Register.preview)\n    else:\n        await dialog_manager.switch_to(Register.choice_instrument)\nasync def step_choice_instrument(event, widget, dialog_manager: DialogManager, item_id: str, *_):\n    dialog_manager.dialog_data[choice_instrument_KEY] = item_id\n    if dialog_manager.dialog_data[FINISHED_KEY]:\n        await dialog_manager.switch_to(Register.preview)\n    else:\n        await dialog_manager.switch_to(Register.choice)\nasync def step_choice(event, widget, dialog_manager: DialogManager, item_id: str, *_):\n    dialog_manager.dialog_data[choice_KEY] = item_id\n    if dialog_manager.dialog_data[FINISHED_KEY]:\n        await dialog_manager.switch_to(Register.preview)\n    else:\n        await dialog_manager.switch_to(Register.experience)\nasync def step_experience(callback: CallbackQuery, widget, dialog_manager: DialogManager, item_id: str, *_):\n    try:\n        if item_id.split(\".\")[0].isdigit() == False:\n            raise Exception\n        elif item_id.split(\".\")[1].isdigit() == False:\n            raise Exception\n        elif int(item_id.split(\".\")[1]) > 12:\n            await callback.answer(\"дед у нас 12 месяцев https://www.youtube.com/watch?v=MxEc7YWJCvk\")\n            await dialog_manager.switch_to(Register.experience)\n        elif int(item_id.split(\".\")[0]) >= 90:\n            await callback.answer(\"прости дед у нас максимум 90 лет\")\n            await dialog_manager.switch_to(Register.experience)\n        else:\n            if dialog_manager.dialog_data[FINISHED_KEY]:\n                await dialog_manager.switch_to(Register.preview)\n            else:\n                await dialog_manager.switch_to(Register.description)\n            # data = get_line_user_temp(dialog_manager.event.from_user.id)\n            # update_line_user_temp(dialog_manager.event.from_user.id, data[2], data[3], data[4], data[5], data[6], data[7],\n            #                       item_id, data[9], data[10])\n            # await dialog_manager.switch_to(Register.preview)\n    except:\n        await callback.answer(\"Вы ввели данное значение не правильно, пожалуйста внимателенее прочитайте пример!\")\n        await dialog_manager.switch_to(Register.experience)\nasync def step_description(callback: CallbackQuery, widget, dialog_manager: DialogManager, item_id: str, *_):\n    if len(item_id) <= 300:\n        if dialog_manager.dialog_data[FINISHED_KEY]:\n            await dialog_manager.switch_to(Register.preview)\n        else:\n            await dialog_manager.switch_to(Register.link)\n    else:\n        await callback.answer(\"Введите описание по короче меньше 300 сиволов включая побелы\")\n        await dialog_manager.switch_to(Register.description)\nasync def step_link(callback: CallbackQuery, widget, dialog_manager: DialogManager, item_id: str, *_):\n    try:\n        check = requests.get(item_id).status_code\n        if check == 404:\n            await callback.answer(\"НЕ КОРЕКТНАЯ ССЫЛКА небыло получено ответа от сайта\")\n            await dialog_manager.switch_to(Register.link)\n        else:\n            dialog_manager.dialog_data[isAlredyRegister] = True\n            await dialog_manager.switch_to(Register.preview)\n    except:\n        await callback.answer(\"НЕ КОРЕКТНАЯ ССЫЛКА пример:https://github.com/ROSTGG\")\n        await dialog_manager.switch_to(Register.link)\n\n    # await next_or_end(event, widget, dialog_manager, *_)\n# async def finaly_link(event, widget, dialog_manager: DialogManager, item_id: str, *_):\n#     dialog_manager.dialog_data[FINISHED_KEY] = True\n#     await dialog_manager.switch_to(Wizard.preview)\n    # await next_or_end(event, widget, dialog_manager, *_)\n# async def step_Ffind(event, widget, dialog_manager: DialogManager,item_id: str, *_):\n#     dialog_manager.dialog_data[\"Ffind_id\"] = item_id\n#     await next_or_end(event, widget, dialog_manager, *_)\n\nasync def result_getter(dialog_manager: DialogManager, **kwargs):\n    dialog_manager.dialog_data[FINISHED_KEY] = True\n    genre, first_instrument, choice_instrument, choice = None, None, None, None\n    try:\n        genre = dialog_manager.dialog_data[genre_KEY]\n        first_instrument = dialog_manager.dialog_data[main_instrument_KEY]\n        choice_instrument = dialog_manager.dialog_data[choice_instrument_KEY]\n        choice = dialog_manager.dialog_data[choice_KEY]\n    except:\n        pass\n    data = await getter_profil()\n    for i in data[genre_KEY]:\n        if i.id == genre:\n            genre = i.name\n    for i in data[Instrument_KEY]:\n        if i.id == first_instrument:\n            first_instrument = i.name\n    for i in data[Instrument_KEY]:\n        if i.id == choice_instrument:\n            choice_instrument = i.name\n    for i in data[Choice_group_KEY]:\n        if i.id == choice:\n            choice = i.name\n\n    return {\n        \"name\": dialog_manager.find(\"name\").get_value(),\n        \"city\": dialog_manager.find(\"city\").get_value(),\n        \"genre\": genre,\n        \"first_instrument\": first_instrument,\n        \"choice_instrument\": choice_instrument,\n        \"choice\": choice,\n        \"experience\": dialog_manager.find(\"experience\").get_value(),\n        \"description\": dialog_manager.find(\"description\").get_value(),\n        \"link\": dialog_manager.find(\"link\").get_value(),\n    }\n\nasync def clear_chat(callback: CallbackQuery, dialog_manager: DialogManager):\n    try:\n        # Все сообщения, начиная с текущего и до первого (message_id = 0)\n        for i in range(dialog_manager.event.message_id, 0, -1):\n            # loop = asyncio.get_event_loop()\n            # forecast = loop.run_until_complete(bot.delete_message(dialog_manager.event.from_user.id, i))\n            # loop.close()\n            await bot.delete_message(dialog_manager.event.from_user.id, i)\n    except TelegramBadRequest as ex:\n        # Если сообщение не найдено (уже удалено или не существует),\n        # код ошибки будет \"Bad Request: message to delete not found\"\n        if ex.message == \"Bad Request: message to delete not found\":\n            print(\"Все сообщения удалены\")\n        else:\n            print(ex.message)\nasync def register_user(callback: CallbackQuery, widj, dialog_manager: DialogManager, **kwargs):\n    # find_text = str(dialog_manager.find(\"find\").get_checked()).replace(\"]\", \"\").replace(\"'\", \"\").replace(\"[\", \"\")\n    # if dialog_manager.dialog_data[isFind_KEY] == \"yes\":\n    #     TisFind = True\n    # else:\n    #     TisFind = False\n    # if dialog_manager.dialog_data[choice_KEY] == \"person\":\n    #     choice = 1301150\n    # else:\n    #     choice = 1301151\n    # await callback.answer(\"Регистрация начилась\")\n    # r = new_str(tg_id=str(callback.from_user.id),\n    #         name=dialog_manager.find(\"name\").get_value(),\n    #         city=dialog_manager.find(\"city\").get_value(),\n    #         find=find_text,\n    #         isFind=TisFind,\n    #         status=choice,\n    #         description=dialog_manager.find(\"description\").get_value(),\n    #         link=dialog_manager.find(\"link\").get_value(),)\n    # print(\"Exit code from data base\"+str(r))\n    # await dialog_manager.start(Menu_st.menu_s, mode=StartMode.NEW_STACK)\n    # if dialog_manager.dialog_data[choice_KEY] == \"person\":\n    #     choice = \"Музыкант \uD83C\uDFB6\"\n    # else:\n    #     choice = \"Группа \uD83E\uDDFE\"\n    # if dialog_manager.dialog_data[isFind_KEY] == \"yes\":\n    #     TisFind = \"Вы пытетесь найти группу\"\n    # else:\n    #     TisFind = \"Вы НЕ пытетесь найти группу\"\n    # first_instrument = str(dialog_manager.find(\"first_instrument\").get_value()).replace(\"]\", \"\").replace(\"'\", \"\").replace(\"[\", \"\")\n    # choice_instrument = str(dialog_manager.find(\"choice_instrument\").get_value()).replace(\"]\", \"\").replace(\"'\", \"\").replace(\"[\", \"\")\n    # if dialog_manager.dialog_data[isFind_KEY] == \"piano\":\n    #     TFind = \"Пианино\"\n    # elif dialog_manager.dialog_data[isFind_KEY] == \"guitar\":\n    #     TFind = \"Гитара\"\n    # elif dialog_manager.dialog_data[isFind_KEY] == \"bass_guitar\":\n    #     TFind = \"Басс гитара\"\n    # else:\n    #     TFind = \"Флейта\"\n    # data = await getter_profil()\n    # for i in data[Instrument_KEY]:\n    #     if data[Instrument_KEY][i].id == main_instrument:\n    #         main_instrument = data[Instrument_KEY][i].name\n    # for i in data[Instrument_KEY]:\n    #     if data[Instrument_KEY][i].id == choice_instrument:\n    #         choice_instrument = data[Instrument_KEY][i].name\n    genre, main_instrument, choice_instrument, choice = None, None, None, None\n    try:\n        genre = dialog_manager.dialog_data[genre_KEY]\n        main_instrument = dialog_manager.dialog_data[main_instrument_KEY]\n        choice_instrument = dialog_manager.dialog_data[choice_instrument_KEY]\n        choice = dialog_manager.dialog_data[choice_KEY]\n    except:\n        pass\n\n    print(\"TG_ID: \" + str(callback.from_user.id))\n    print(f\"name: {dialog_manager.find('name').get_value()}\\n\",\n        f\"city: {dialog_manager.find('city').get_value()}\\n\",\n        f\"genre: {genre}\\n\",\n        f\"first_instrument: {main_instrument}\\n\",\n        f\"choice_instrument: {choice_instrument}\\n\",\n        f\"choice: {choice}\\n\",\n        f\"experience: {dialog_manager.find('experience').get_value()}\\n\",\n        f\"description: {dialog_manager.find('description').get_value()}\\n\",\n        f\"link: {dialog_manager.find('link').get_value()}\\n\")\n    data = create_row(tg_id=callback.from_user.id,\n               name=dialog_manager.find('name').get_value(),\n               city=dialog_manager.find('city').get_value(),\n               genre = genre,\n               main_inst = main_instrument,\n               choice_inst = choice_instrument,\n               choice = choice,\n               exp = dialog_manager.find('experience').get_value(),\n               des = dialog_manager.find('description').get_value(),\n               link = dialog_manager.find('link').get_value())\n    await callback.answer(\"Регистрация завершена\")\n    # await clear_chat(callback, dialog_manager)\n    await dialog_manager.start(Menu.MAIN, mode=StartMode.NEW_STACK)\n\n\ninfo_bot_window = Window(\n    Const(\"Пожалуйста, запустите бота @notif_second_bot для уведомлений, туда вам будут высылать второстепенную информацию что-бы не засорять основной бот\"),\n    Url(Const(\"БОТ\"), Const(\"https://t.me/notif_second_bot\")),\n    SwitchTo(text=Const(\"Я запустил(а) бота, начать дегистрацию\"), id=\"to_next_name_from_info\", state=Register.name),\n    CANCEL_EDIT,\n    state=Register.notif_bot,\n)\n\nname_window = Window(\n    Const(\"Введите ваше имя:\"),\n    TextInput(id=\"name\", on_success=step_name),\n    CANCEL_EDIT,\n    state=Register.name,\n)\ncity_window = Window(\n    Const(\"Введите ваш город(город в котором вы проживаете):\"),\n    TextInput(id=\"city\", on_success=step_city),\n    CANCEL_EDIT,\n    state=Register.city,\n)\ngenre_window = Window(\n    Const(\"Выберите любимый жанр:\"),\n    Column(\n    Select(\n        text=Format(\"{item.emoji} {item.name}\"),\n        id=\"genre\",\n        items=genre_KEY,\n        # Alternatives:\n        # items=lambda d: d[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n        # items=F[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n        item_id_getter=id_getter,\n        on_click=step_genre,\n    )),\n    CANCEL_EDIT,\n    state=Register.genre,\n    getter=getter_profil,\n    preview_data=getter_profil,\n)\nfirst_instrument_window = Window(\n    Const(\"Выберите основной музыкальный инструмент:\"),\n    Column(\n    Select(\n        text=Format(\"{item.emoji} {item.name}\"),\n        id=\"first_instrument\",\n        items=Instrument_KEY,\n        # Alternatives:\n        # items=lambda d: d[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n        # items=F[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n        item_id_getter=id_getter,\n        on_click=step_first_instrument,\n    )),\n    CANCEL_EDIT,\n    state=Register.first_instrument,\n    getter=getter_profil,\n    preview_data=getter_profil,\n)\nchoice_instrument_window = Window(\n    Const(\"Выберите дополнительный музыкальный инструмент:\"),\n    Column(\n    Select(\n        text=Format(\"{item.emoji} {item.name}\"),\n        id=\"choice_instrument\",\n        items=Instrument_KEY,\n        # Alternatives:\n        # items=lambda d: d[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n        # items=F[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n        item_id_getter=id_getter,\n        on_click=step_choice_instrument,\n    )),\n    CANCEL_EDIT,\n    state=Register.choice_instrument,\n    getter=getter_profil,\n    preview_data=getter_profil,\n)\n# choice_isFind_window = Window(\n#     Const(\"Выберите :\"),\n#     Select(\n#         text=Format(\"{item.emoji} {item.name} (\"),\n#         id=isFind_KEY,\n#         items=isFind_KEY,\n#         # Alternatives:\n#         # items=lambda d: d[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n#         # items=F[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n#         item_id_getter=id_getter,\n#         on_click=step_isFind,\n#     ),\n#     CANCEL_EDIT,\n#     state=Wizard.isFind,\n#     getter=getter,\n#     preview_data=getter,\n# )\n\nchoice_window = Window(\nConst(\"Вы состоите в группе?\"),\n            Select(\n            text=Format(\"{item.emoji} {item.name}\"),\n            id=\"choice\",\n            items=Choice_group_KEY,\n            # Alternatives:\n            # items=lambda d: d[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n            # items=F[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n            item_id_getter=id_getter,\n            on_click=step_choice,\n            ),\n        CANCEL_EDIT,\n        state=Register.choice,\n        getter=getter_profil,\n        preview_data=getter_profil,\n        )\nexperience_window = Window(\n    Const(\"Введите стаж пример(пять лет и одинадцать месяцев): 5.11:\"),\n    TextInput(id=\"experience\", on_success=step_experience),\n    CANCEL_EDIT,\n    state=Register.experience,\n)\ndescription_window = Window(\n    Const(\"Введите описание:\"),\n    TextInput(id=\"description\", on_success=step_description),\n    CANCEL_EDIT,\n    state=Register.description,\n)\nlink_window = Window(\n    Const(\"Введите ссылку на публичную страницу:\"),\n    TextInput(id=\"link\", on_success=step_link),\n    CANCEL_EDIT,\n    state=Register.link,\n)\nexit_window = Window(\n    Const(\"Пожалуйста, проверте введённые данные\"),\n    Format(\"Имя: {name}\"),\n    Format(\"Город: {city}\"),\n    Format(\"Жанр: {genre}\"),\n    Format(\"Основной музыкальный инструмент: {first_instrument}\"),\n    Format(\"Дополнительный музыкальный инструмент: {choice_instrument}\"),\n    Format(\"Состоите ли вы в группе: {choice}\"),\n    Format(\"Стаж: {experience}\"),\n    Format(\"Описание: {description}\"),\n    Format(\"Ссылка: {link}\"),\n    SwitchTo(\n        Const(\"Изменить название\"),\n        state=Register.name, id=\"to_name\",\n    ),\n    SwitchTo(\n        Const(\"Изменить город\"),\n        state=Register.city, id=\"to_city\",\n    ),\n    SwitchTo(\n        Const(\"Изменить жанр\"),\n        state=Register.genre, id=\"to_genre\",\n    ),\n    SwitchTo(\n        Const(\"Изменить основной музыкальный инструмент\"),\n        state=Register.first_instrument, id=\"to_first_instrument\",\n    ),\n    SwitchTo(\n        Const(\"Изменить дополнительный музыкальный инструмент\"),\n        state=Register.choice_instrument, id=\"to_choise_instrument\",\n    ),\n    SwitchTo(\n        Const(\"Изменить статус\"),\n        state=Register.choice, id=\"to_choice\",\n    ),\n    SwitchTo(\n        Const(\"Изменить стаж\"),\n        state=Register.experience, id=\"to_isFind\",\n    ),\n    SwitchTo(\n        Const(\"Изменить описание\"),\n        state=Register.description, id=\"to_description\",\n    ),\n    SwitchTo(\n        Const(\"Изменить ссылку на публичную страницу\"),\n        state=Register.link,\n        id=\"to_link\",\n    ),\n    Button(\n        Const(\"Сохранить\"),\n        id=\"to_save\",\n        on_click=register_user,\n    ),\n    state=Register.preview,\n    getter=result_getter,\n    # getter=get_call_data,\n    parse_mode=\"html\",\n    )\n\ngregister_dialog_228 = Dialog(\n                info_bot_window,\n                name_window,\n                city_window,\n                genre_window,\n                first_instrument_window,\n                choice_instrument_window,\n                choice_window,\n                experience_window,\n                description_window,\n                link_window,\n                exit_window,\n                launch_mode=LaunchMode.ROOT,)\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Telegram/bot_dialogs/register.py b/Telegram/bot_dialogs/register.py
+--- a/Telegram/bot_dialogs/register.py	(revision cee0a17c1939a1822b7323efc14b5e7332c47e6b)
++++ b/Telegram/bot_dialogs/register.py	(date 1713185844372)
+@@ -9,11 +9,11 @@
+ 
+ # from Telegram.bot import bot
+ from Telegram.bot_dialogs.data import FINISHED_KEY, choice_KEY, genre_KEY, main_instrument_KEY, choice_instrument_KEY, \
+-    Instrument_KEY, Choice_group_KEY, isAlredyRegister, Data_update_list, tg_id_user, Istr
++    Instrument_KEY, Choice_group_KEY, isAlredyRegister, Data_update_list, Istr
+ from Telegram.bot_dialogs.getter import getter_profil
+ from Telegram.bot_dialogs.states import Register, Menu
+-from Telegram.bd import create_row
+-from Telegram.db_user_info import create_row_userinfo
++from Telegram.data_base_functions.bd import create_row
++from Telegram.data_base_functions.db_user_info import create_row_userinfo
+ 
+ bot = Bot(token="6752526100:AAFCSA3zE7LTV88AP68ozKPd90DxJ14Upks")
+ 
+@@ -410,7 +410,7 @@
+     state=Register.experience,
+ )
+ description_window = Window(
+-    Const("Введите описание:"),
++    Const("Пару слов о вас: "),
+     TextInput(id="description", on_success=step_description),
+     CANCEL_EDIT,
+     state=Register.description,
+Index: Telegram/bot_dialogs/search_dialog.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import json\nimport shelve\nfrom dataclasses import dataclass\nfrom typing import Coroutine, Any\n\nimport requests\nfrom aiogram import F, Bot\nfrom aiogram.types import CallbackQuery, Message\nfrom aiogram_dialog import Dialog, LaunchMode, Window, DialogManager\nfrom aiogram_dialog.widgets.input import TextInput\nfrom aiogram_dialog.widgets.kbd import Button, SwitchTo, Column, Select, Start, ScrollingGroup, NextPage, PrevPage, Row, \\\n    NumberedPager, FirstPage, CurrentPage, LastPage\nfrom aiogram_dialog.widgets.text import Const, Format\n\nimport data\nfrom Telegram.bot import send_notification\nfrom Telegram.enter_bot_value import bot\nfrom Telegram.bd import Session, get_line_user\nfrom Telegram.bot_dialogs import getter\nfrom Telegram.bot_dialogs.common import MAIN_MENU_BUTTON\nfrom Telegram.bot_dialogs.data import *\nfrom Telegram.bot_dialogs.getter import getter_profil\nfrom Telegram.bot_dialogs.states import EditAccount, Menu, Search_m\nfrom Telegram.db_user_info import get_line_userinfo\n# from Telegram.bd import create_row, get_line_user, update_line_user\nfrom Telegram.db_user_temp import create_row_temp, get_line_user_temp, update_line_user_temp, delete_line_user_temp\nfrom Telegram.search_function import search, form, Ibdstr\nfrom aiogram_dialog.widgets.text import Const, Format, List, ScrollingText, Text\n\n\nbot = bot\ntemp_instrument = {}\ntemp_id = {}\ntemp_id_user_info = None\n# bot = Bot(token=\"6752526100:AAFCSA3zE7LTV88AP68ozKPd90DxJ14Upks\")\ndef id_getter(istr: Ibdstr) -> str:\n    return istr.id\n# json_file_path = \"temp_instrument.json\"\n# Функция для записи данных в JSON файл\n# def load_json(file_name):\n#     try:\n#         with open(file_name, 'r') as file:\n#             data = json.load(file)\n#     except FileNotFoundError:\n#         data = []  # Если файл не существует, создаем пустой список для начала\n#     return data\n# def read_from_json():\n#     with open(json_file_path, 'r') as file:\n#         data = json.load(file)\n#         return data\n#\n# def write_to_json(id, data):\n#     existing_data = read_from_json()\n#\n#     # Добавление новых данных к загруженным\n#     set_data = {id: data}\n#     existing_data.append(set_data)\n#     with open(json_file_path, 'w') as file:\n#         json.dump(set_data, file, indent=4)\n# write_to_json(1151515111, \"good bye\")\n# print(read_from_json())\n\n# Функция для чтения данных из JSON файла\nasync def step_set_instrument(event, widget, dialog_manager: DialogManager, item_id: str, *_):\n    # dialog_manager.dialog_data[t_data_genre] = item_id\n    # data = get_line_user_temp(dialog_manager.event.from_user.id)\n    temp_instrument[dialog_manager.event.from_user.id] = item_id\n    await dialog_manager.switch_to(Search_m.MAIN)\n\n\nsession = Session('Telegram/data')\nasync def getter_one(dialog_manager: DialogManager, **kwargs):\n    data = search(temp_instrument[dialog_manager.event.from_user.id], dialog_manager.event.from_user.id,session)\n    temp = []\n    for i in data:\n        temp.append(i.id)\n        # id_t, text = i.id, i.info\n        # print(text)\n    temp_id[dialog_manager.event.from_user.id] = temp\n\n    return {\n        find_user_KEY:\n            # Ibdstr(\"132121351\", \"dfiogjdiojsgi\"),\n            # Ibdstr(\"132121351\", \"dfiogjdiojsgi\"),\n            # Ibdstr(\"132121351\", \"dfiogjdiojsgi\"),\n            # Ibdstr(\"132121351\", \"dfiogjdiojsgi\")\n\n            data\n    }\nasync def enter_user(event, widget, manager: DialogManager, **kwargs):\n    widget = manager.find('scroll_no_pager')\n    # print(await widget.get_page())\n    data = temp_id[manager.event.from_user.id][await widget.get_page()]\n    # print(data)\n    # print(manager.event.from_user)\n    info = get_line_userinfo(data)\n    # info = get_line_userinfo(manager.event.from_user.id)\n    # await manager.answer_callback()\n\n    info_me = get_line_userinfo(manager.event.from_user.id)\n    card = get_line_user(data)\n    await send_notification(False, manager.event.from_user.id, f'''Вы выбрали @{info[2]}\n    {card[2]} - {card[3]}\nОсновной инструмент - {card[5]}\nДополнительный инструмент - {card[6]}\nСтаж -  годов - {card[8].split(\".\")[0]},  месяцев - {card[8].split(\".\")[1]}\nЖанр - {str(card[4] + \" music\")}\nО себе - \"{card[9]}\"\nСсылка на публичную страницу - {card[10]}''')\n\n    datas = getter_data_dict\n    card = get_line_user(manager.event.from_user.id)\n    card = list(card)\n    for i in datas[genre_KEY]:\n        if i.id == card[4]:\n            card[4] = i.name\n    for i in datas[Instrument_KEY]:\n        if i.id == card[5]:\n            card[5] = i.name\n    for i in datas[Instrument_KEY]:\n        if i.id == card[6]:\n            card[6] = i.name\n    card = tuple(card)\n\n    await send_notification(True, data, f'''Вас выбрал @{info_me[2]}\n{card[2]} - {card[3]}\nОсновной инструмент - {card[5]}\nДополнительный инструмент - {card[6]}\nСтаж -  годов - {card[8].split(\".\")[0]},  месяцев - {card[8].split(\".\")[1]}\nЖанр - {str(card[4] + \" music\")}\nО себе - \"{card[9]}\"\nСсылка на публичную страницу - {card[10]}\n    ''')\n\n\nwindow_one = Window(\n    Const(\"Выберете инcтрумент:\"),\n    Column(\n    Select(\n        text=Format(\"{item.emoji} {item.name}\"),\n        id=\"first_instrument\",\n        items=Instrument_KEY,\n        # Alternatives:\n        # items=lambda d: d[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n        # items=F[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n        item_id_getter=id_getter,\n        on_click=step_set_instrument,\n    )),\n    MAIN_MENU_BUTTON,\n    getter=getter_profil,\n    preview_data=getter_profil,\n    state=Search_m.EnterInstrument,\n)\nwindow_view = Window(\n    Const(\"See:\"),\n    # Const(\"Scrolling group with default pager (legacy mode)\"),\n    List(\n        Format(\"{item.info}\"),\n        items=find_user_KEY,\n        id=\"scroll_no_pager\",\n        page_size=1,\n        # item_id_getter=id_getter\n    ),\n    # Row(\n    #\n    #     FirstPage(\n    #         scroll=\"scroll_no_pager\", text=Format(\"⏮\uFE0F {target_page1}\"),\n    #     ),\n    #     PrevPage(\n    #         scroll=\"scroll_no_pager\", text=Format(\"◀\uFE0F\"),\n    #     ),\n    #     CurrentPage(\n    #         scroll=\"scroll_no_pager\", text=Format(\"{current_page1}\"),\n    #     ),\n    #     NextPage(\n    #         scroll=\"scroll_no_pager\", text=Format(\"▶\uFE0F\"),\n    #     ),\n    #     LastPage(\n    #         scroll=\"scroll_no_pager\", text=Format(\"{target_page1} ⏭\uFE0F\"),\n    #     ),\n    # ),\n    # NumberedPager(\n    #     scroll=\"scroll_no_pager\",\n    # ),\n\n    Row(\n        PrevPage(scroll=\"scroll_no_pager\"),\n        Button(Const(\"выбрать\"), id=\"next_page\", on_click=enter_user),\n        NextPage(scroll=\"scroll_no_pager\"),\n    ),\n    MAIN_MENU_BUTTON,\n    getter=getter_one,\n    preview_data=getter_one,\n    state=Search_m.MAIN,\n)\n# window_preview = Window(\n#     Format(\"{item}\"),\n# #     Format(\"{item.info}\"),\n# #     items=find_user_KEY,\n# #     id=\"view_musiciants\",\n# #     item_id_getter=id_getter,\n# #     on_click=step_view_user,\n# # ),\n#     # Const(\"Scrolling group with default pager (legacy mode)\"),\n#     MAIN_MENU_BUTTON,\n#     getter=getter_two,\n#     state=Search_m.MAIN,\n# )\n# dialog_search = Dialog(window_one,window_view, launch_mode=LaunchMode.ROOT)
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Telegram/bot_dialogs/search_dialog.py b/Telegram/bot_dialogs/search_dialog.py
+--- a/Telegram/bot_dialogs/search_dialog.py	(revision cee0a17c1939a1822b7323efc14b5e7332c47e6b)
++++ b/Telegram/bot_dialogs/search_dialog.py	(date 1713185844355)
+@@ -1,31 +1,19 @@
+-import json
+-import shelve
+-from dataclasses import dataclass
+-from typing import Coroutine, Any
+-
+-import requests
+-from aiogram import F, Bot
+-from aiogram.types import CallbackQuery, Message
+-from aiogram_dialog import Dialog, LaunchMode, Window, DialogManager
++from aiogram_dialog import Dialog, Window, DialogManager
+ from aiogram_dialog.widgets.input import TextInput
+-from aiogram_dialog.widgets.kbd import Button, SwitchTo, Column, Select, Start, ScrollingGroup, NextPage, PrevPage, Row, \
+-    NumberedPager, FirstPage, CurrentPage, LastPage
+-from aiogram_dialog.widgets.text import Const, Format
++from aiogram_dialog.widgets.kbd import Button, Column, Select, ScrollingGroup, NextPage, PrevPage, Row, \
++    NumberedPager
+ 
+-import data
+ from Telegram.bot import send_notification
+ from Telegram.enter_bot_value import bot
+-from Telegram.bd import Session, get_line_user
+-from Telegram.bot_dialogs import getter
++from Telegram.data_base_functions.bd import Session, get_line_user
+ from Telegram.bot_dialogs.common import MAIN_MENU_BUTTON
+ from Telegram.bot_dialogs.data import *
+ from Telegram.bot_dialogs.getter import getter_profil
+-from Telegram.bot_dialogs.states import EditAccount, Menu, Search_m
+-from Telegram.db_user_info import get_line_userinfo
++from Telegram.bot_dialogs.states import Menu, Search_m
++from Telegram.data_base_functions.db_user_info import get_line_userinfo
+ # from Telegram.bd import create_row, get_line_user, update_line_user
+-from Telegram.db_user_temp import create_row_temp, get_line_user_temp, update_line_user_temp, delete_line_user_temp
+-from Telegram.search_function import search, form, Ibdstr
+-from aiogram_dialog.widgets.text import Const, Format, List, ScrollingText, Text
++from Telegram.search_function import search, Ibdstr
++from aiogram_dialog.widgets.text import Const, Format, List, Text
+ 
+ 
+ bot = bot
+Index: Telegram/bd_connections.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Telegram/bd_connections.py b/Telegram/data_base_functions/bd_connections.py
+rename from Telegram/bd_connections.py
+rename to Telegram/data_base_functions/bd_connections.py
+--- a/Telegram/bd_connections.py	(revision cee0a17c1939a1822b7323efc14b5e7332c47e6b)
++++ b/Telegram/data_base_functions/bd_connections.py	(date 1713185844358)
+@@ -1,7 +1,7 @@
+ import sqlite3 as sql
+ 
+ def get_group_from_id(id):
+-    conn = sql.connect('data/second.SQLite')
++    conn = sql.connect('../data/second.SQLite')
+     cur = conn.cursor()
+ 
+     cur.execute('SELECT * FROM bands WHERE id = ?', (id,))
+@@ -13,7 +13,7 @@
+     return ans
+ 
+ def get_card_from_id(id):
+-    conn = sql.connect('data/second.SQLite')
++    conn = sql.connect('../data/second.SQLite')
+     cur = conn.cursor()
+     cur.execute('SELECT * FROM bands WHERE id = ?', (id,))
+     group = cur.fetchall()[0]
+@@ -38,7 +38,7 @@
+ """
+ 
+ def  create_group(name: str, des: str, admin: int, link: str, users: list, inst: list):
+-    conn = sql.connect('data/second.SQLite')
++    conn = sql.connect('../data/second.SQLite')
+ 
+     cur = conn.cursor()
+ 
+@@ -64,7 +64,7 @@
+     conn.close()
+ 
+ def update_line_user(id, name: str, des: str, admin: int, link: str, users: list, inst: list):
+-    bd = sql.connect('data/second.SQLite')
++    bd = sql.connect('../data/second.SQLite')
+     cursor = bd.cursor()
+     users = '.'.join(users)
+     inst = '.'.join(inst)
+Index: Telegram/bot_dialogs/edit_account.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import requests\nfrom aiogram import F\nfrom aiogram.types import CallbackQuery, Message\nfrom aiogram_dialog import Dialog, LaunchMode, Window, DialogManager\nfrom aiogram_dialog.widgets.input import TextInput\nfrom aiogram_dialog.widgets.kbd import Button, SwitchTo, Column, Select, Start\nfrom aiogram_dialog.widgets.text import Const, Format\n\nimport data\nfrom Telegram.bot_dialogs.data import *\nfrom Telegram.bot_dialogs.getter import getter_profil\nfrom Telegram.bot_dialogs.states import EditAccount, Menu\nfrom Telegram.bd import create_row, get_line_user, update_line_user\nfrom Telegram.db_user_temp import create_row_temp, get_line_user_temp, update_line_user_temp, delete_line_user_temp\n\n\ndef id_getter(istr: Istr) -> str:\n    return istr.id\n\nCANCEL_EDIT = SwitchTo(\n    Const(\"Отменить редактирование\"),\n    id=\"cnl_edt\",\n    state=EditAccount.preview,\n)\n# \"name\": dialog_manager.find(\"name\").get_value(),\n# \"city\": dialog_manager.find(\"city\").get_value(),\n# \"genre\": genre,\n# \"first_instrument\": first_instrument,\n# \"choice_instrument\": choice_instrument,\n# \"choice\": choice,\n# \"experience\": dialog_manager.find(\"experience\").get_value(),\n# \"description\": dialog_manager.find(\"description\").get_value(),\n# \"link\": dialog_manager.find(\"link\").get_value(),\n\nasync def step_go_edit_akkount(callback: CallbackQuery, widget, dialog_manager: DialogManager):\n    # global data.object_dialog_manager\n    data_list = get_line_user(callback.from_user.id)\n    create_row_temp(callback.from_user.id, data_list[2], data_list[3],\n                    data_list[4], data_list[5], data_list[6], data_list[7],\n                    data_list[8], data_list[9], data_list[10])\n\n    # dialog_manager.dialog_data[Data_update_list] = data_list\n    # print(data_list)\n    # print(data_list[3])\n    # dialog_manager.dialog_data[t_data_name] = data_list[2]\n    # dialog_manager.dialog_data[t_data_city] = data_list[3]\n    # dialog_manager.dialog_data[t_data_genre] = data_list[4]\n    # dialog_manager.dialog_data[t_data_first_instrument] = data_list[5]\n    # dialog_manager.dialog_data[t_data_choice_instrument] = data_list[6]\n    # dialog_manager.dialog_data[t_data_choice] = data_list[7]\n    # dialog_manager.dialog_data[t_data_experience] = data_list[8]\n    # dialog_manager.dialog_data[t_data_description] = data_list[9]\n    # dialog_manager.dialog_data[t_data_link] = data_list[10]\n    # data.object_dialog_manager = dialog_manager\n    #\n    # print(dialog_manager.dialog_data.get(t_data_name))\n    await dialog_manager.start(EditAccount.preview)\n\nasync def step_name(callback: CallbackQuery, widget, dialog_manager: DialogManager,item_id: str, *_):\n    # dialog_manager.dialog_data[choice_KEY] = item_id\n    # dialog_manager.dialog_data[t_data_name] = item_id\n    if len(item_id) < 31:\n        data = get_line_user_temp(dialog_manager.event.from_user.id)\n        update_line_user_temp(dialog_manager.event.from_user.id, item_id, data[3], data[4], data[5], data[6], data[7],\n                              data[8], data[9], data[10])\n        await dialog_manager.switch_to(EditAccount.preview)\n    else:\n        await callback.answer(\"Введите имя по короче меньше 30 сиволов включая побелы\")\n        await dialog_manager.switch_to(EditAccount.name)\n\nasync def step_city(callback: CallbackQuery, widget, dialog_manager: DialogManager,item_id: str, *_):\n    # dialog_manager.dialog_data[t_data_city] = item_id\n\n    if len(item_id) <= 100:\n        data = get_line_user_temp(dialog_manager.event.from_user.id)\n        update_line_user_temp(dialog_manager.event.from_user.id, data[2], item_id, data[4], data[5], data[6], data[7],\n                              data[8], data[9], data[10])\n        await dialog_manager.switch_to(EditAccount.preview)\n    else:\n        await callback.answer(\"Введите город по короче меньше 100 сиволов включая побелы\")\n        await dialog_manager.switch_to(EditAccount.name)\nasync def step_genre(callback: CallbackQuery, widget, dialog_manager: DialogManager, item_id: str, *_):\n    # dialog_manager.dialog_data[t_data_genre] = item_id\n    data = get_line_user_temp(dialog_manager.event.from_user.id)\n    update_line_user_temp(dialog_manager.event.from_user.id, data[2], data[3], item_id, data[5], data[6], data[7], data[8], data[9], data[10])\n\n    await dialog_manager.switch_to(EditAccount.preview)\n\nasync def step_first_instrument(callback: CallbackQuery, widget, dialog_manager: DialogManager, item_id: str, *_):\n    # dialog_manager.dialog_data[t_data_first_instrument] = item_id\n    data = get_line_user_temp(dialog_manager.event.from_user.id)\n    update_line_user_temp(dialog_manager.event.from_user.id, data[2], data[3], data[4], item_id, data[6], data[7], data[8], data[9], data[10])\n\n    await dialog_manager.switch_to(EditAccount.preview)\nasync def step_choice_instrument(callback: CallbackQuery, widget, dialog_manager: DialogManager, item_id: str, *_):\n    # dialog_manager.dialog_data[t_data_choice_instrument] = item_id\n    data = get_line_user_temp(dialog_manager.event.from_user.id)\n    update_line_user_temp(dialog_manager.event.from_user.id, data[2], data[3], data[4], data[5], item_id, data[7], data[8], data[9], data[10])\n\n    await dialog_manager.switch_to(EditAccount.preview)\n\nasync def step_choice(callback: CallbackQuery, widget, dialog_manager: DialogManager, item_id: str, *_):\n    # dialog_manager.dialog_data[t_data_choice] = item_id\n    if item_id == \"True\": item_id = True\n    elif item_id == \"False\": item_id = False\n    data = get_line_user_temp(dialog_manager.event.from_user.id)\n    update_line_user_temp(dialog_manager.event.from_user.id, data[2], data[3], data[4], data[5], data[6], item_id, data[8], data[9], data[10])\n\n    await dialog_manager.switch_to(EditAccount.preview)\nasync def step_experience(callback: CallbackQuery, widget, dialog_manager: DialogManager, item_id: str, *_):\n    # dialog_manager.dialog_data[t_data_experience] = item_id\n    try:\n        if item_id.split(\".\")[0].isdigit() == False:\n            raise Exception\n        elif item_id.split(\".\")[1].isdigit() == False:\n            raise Exception\n        elif int(item_id.split(\".\")[1]) > 12:\n            await callback.answer(\"дед у нас 12 месяцев https://www.youtube.com/watch?v=MxEc7YWJCvk\")\n            await dialog_manager.switch_to(EditAccount.experience)\n        elif int(item_id.split(\".\")[0]) >= 90:\n            await callback.answer(\"прости дед у нас максимум 90 лет\")\n            await dialog_manager.switch_to(EditAccount.experience)\n        else:\n            data = get_line_user_temp(dialog_manager.event.from_user.id)\n            update_line_user_temp(dialog_manager.event.from_user.id, data[2], data[3], data[4], data[5], data[6], data[7],\n                                  item_id, data[9], data[10])\n            await dialog_manager.switch_to(EditAccount.preview)\n    except:\n        await callback.answer(\"Вы ввели данное значение не правильно, пожалуйста внимателенее прочитайте пример!\")\n        await dialog_manager.switch_to(EditAccount.experience)\n\n\nasync def step_description(callback: CallbackQuery, widget, dialog_manager: DialogManager, item_id: str, *_):\n    # dialog_manager.dialog_data[t_data_description] = item_id\n    if len(item_id) < 300:\n        data = get_line_user_temp(dialog_manager.event.from_user.id)\n        update_line_user_temp(dialog_manager.event.from_user.id, data[2], data[3], data[4], data[5], data[6], data[7], data[8], item_id, data[10])\n        await dialog_manager.switch_to(EditAccount.preview)\n    else:\n        await callback.answer(\"Введите описание по короче меньше 300 сиволов включая побелы\")\n        await dialog_manager.switch_to(EditAccount.description)\n\n\nasync def step_link(callback: CallbackQuery, widget, dialog_manager: DialogManager, item_id: str, *_):\n    try:\n        check = requests.get(item_id).status_code\n        if check == 404:\n            await callback.answer(\"НЕ КОРЕКТНАЯ ССЫЛКА небыло получено ответа от сайта\")\n            await dialog_manager.switch_to(EditAccount.link)\n        else:\n            # dialog_manager.dialog_data[t_data_link] = item_id\n            data = get_line_user_temp(dialog_manager.event.from_user.id)\n            update_line_user_temp(dialog_manager.event.from_user.id, data[2], data[3], data[4], data[5], data[6],\n                                  data[7], data[8], data[9], item_id)\n\n            await dialog_manager.switch_to(EditAccount.preview)\n    except:\n        await callback.answer(\"НЕ КОРЕКТНАЯ ССЫЛКА пример:https://github.com/ROSTGG\")\n        await dialog_manager.switch_to(EditAccount.link)\n\n    # await next_or_end(event, widget, dialog_manager, *_)\n# async def finaly_link(event, widget, dialog_manager: DialogManager, item_id: str, *_):\n#     dialog_manager.dialog_data[FINISHED_KEY] = True\n#     await dialog_manager.switch_to(Wizard.preview)\n    # await next_or_end(event, widget, dialog_manager, *_)\n# async def step_Ffind(event, widget, dialog_manager: DialogManager,item_id: str, *_):\n#     dialog_manager.dialog_data[\"Ffind_id\"] = item_id\n#     await next_or_end(event, widget, dialog_manager, *_)\n\nasync def result_getter(dialog_manager: DialogManager, **kwargs):\n    print(\"from result_setter: \" + str(dialog_manager.event.from_user.id))\n    # print(\"result_getter: \" + str(dialog_manager.dialog_data.get(t_data_name)))\n    data = list(get_line_user_temp(dialog_manager.event.from_user.id))\n    # data = [\"1\", \"1\", \"1\", \"1\", \"1\", \"1\", \"1\", \"1\", \"1\", \"1\", \"1\", \"1\", \"1\", \"1\", \"1\", ]\n    getter_data = await getter_profil()\n    for i in getter_data[genre_KEY]:\n        if i.id == data[4]:\n            data[4] = i.name\n    for i in getter_data[Instrument_KEY]:\n        if i.id == data[5]:\n            data[5] = i.name\n    for i in getter_data[Instrument_KEY]:\n        if i.id == data[6]:\n            data[6] = i.name\n    if 1 == data[7]:\n        data[7] = \"Да\"\n    else:\n        data[7] = \"Нет\"\n\n    # if data[4] == \"True\": item_id = True\n    # elif item_id == \"False\": item_id = False\n    # print(\"user getter\")\n    # print(f\"name: {data[2]}\\n\"\n    #       f\"city: {data[3]}\\n\"\n    #       f\"genre: {data[4]}\\n\"\n    #       f\"first_instrument: {data[5]}\\n\"\n    #       f\"choice_instrument: {data[6]}\\n\"\n    #       f\"choice: {data[7]}\\n\"\n    #       f\"experience: {data[8]}\\n\"\n    #       f\"description: {data[9]}\\n\"\n    #       f\"link: {data[10]}\\n\")\n    return {\n        \"name\": data[2],\n        \"city\": data[3],\n        \"genre\": data[4],\n        \"first_instrument\": data[5],\n        \"choice_instrument\": data[6],\n        \"choice\": data[7],\n        \"experience\": data[8],\n        \"description\": data[9],\n        \"link\": data[10],\n    }\n    # return {\n    #     \"name\": dialog_manager.dialog_data.get(t_data_name),\n    #     \"city\": dialog_manager.dialog_data.get(t_data_city),\n    #     \"genre\": dialog_manager.dialog_data.get(t_data_genre),\n    #     \"first_instrument\": dialog_manager.dialog_data.get(t_data_first_instrument),\n    #     \"choice_instrument\": dialog_manager.dialog_data.get(t_data_choice_instrument),\n    #     \"choice\": dialog_manager.dialog_data.get(t_data_choice),\n    #     \"experience\": dialog_manager.dialog_data.get(t_data_experience),\n    #     \"description\": dialog_manager.dialog_data.get(t_data_description),\n    #     \"link\": dialog_manager.dialog_data.get(t_data_link),\n    # }\n    #\n\nasync def EditAccount_user(callback: CallbackQuery, widj, dialog_manager: DialogManager, **kwargs):\n    print(\"Пользоваетль начал обновление\")\n    print(\"TG_ID\" + str(callback.from_user.id))\n    # print(f\"name: {dialog_manager.dialog_data.get(t_data_name)}\\n\",\n    #     f\"city: {dialog_manager.dialog_data.get(t_data_city)}\\n\",\n    #     f\"genre: {dialog_manager.dialog_data.get(t_data_genre)}\\n\",\n    #     f\"first_instrument: {dialog_manager.dialog_data.get(t_data_first_instrument)}\\n\",\n    #     f\"choice_instrument: {dialog_manager.dialog_data.get(t_data_choice_instrument)}\\n\",\n    #     f\"choice: {dialog_manager.dialog_data.get(t_data_choice)}\\n\",\n    #     f\"experience: {dialog_manager.dialog_data.get(t_data_experience)}\\n\",\n    #     f\"description: {dialog_manager.dialog_data.get(t_data_description)}\\n\",\n    #     f\"link: {dialog_manager.dialog_data.get(t_data_link)}\\n\")\n    data = get_line_user_temp(dialog_manager.event.from_user.id)\n\n    update_line_user(dialog_manager.event.from_user.id, data[2], data[3], data[4], data[5], data[6], data[7], data[8], data[9], data[10])\n    delete_line_user_temp(dialog_manager.event.from_user.id)\n    # data = update_line_user(tg_id=callback.from_user.id,\n    #            name=dialog_manager.dialog_data.get(t_data_name),\n    #            city=dialog_manager.dialog_data.get(t_data_city),\n    #            genre = dialog_manager.dialog_data.get(t_data_genre),\n    #            main_inst = dialog_manager.dialog_data.get(t_data_first_instrument),\n    #            choice_inst = dialog_manager.dialog_data.get(t_data_choice_instrument),\n    #            choice = dialog_manager.dialog_data.get(t_data_choice),\n    #            exp = dialog_manager.dialog_data.get(t_data_experience),\n    #            des = dialog_manager.dialog_data.get(t_data_description),\n    #            link = dialog_manager.dialog_data.get(t_data_link))\n    await callback.answer(\"Обновление завершено\")\n    await dialog_manager.start(Menu.MAIN)\nasync def cancel_edit(callback: CallbackQuery, widj, dialog_manager: DialogManager, **kwargs):\n    delete_line_user_temp(dialog_manager.event.from_user.id)\n    await dialog_manager.start(Menu.MAIN)\n\n# choice_window = Window(\n# Const(\"Вы группа или музыкант?\"),\n#         Select(\n#             text=Format(\"{item.emoji} {item.name}\"),\n#             id=\"choice\",\n#             items=Choice_KEY,\n#             # Alternatives:\n#             # items=lambda d: d[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n#             # items=F[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n#             item_id_getter=id_getter,\n#             on_click=step_choice,\n#         ),\n#         CANCEL_EDIT,\n#         state=Wizard.choice,\n#         getter=getter,\n#         preview_data=getter,\n#         )\nname_window = Window(\n    Const(\"Введите своё имя:\"),\n    TextInput(id=\"name\", on_success=step_name),\n    CANCEL_EDIT,\n    state=EditAccount.name,\n)\ncity_window = Window(\n    Const(\"Введите ваш город(город в котором вы проживаете):\"),\n    TextInput(id=\"city\", on_success=step_city),\n    CANCEL_EDIT,\n    state=EditAccount.city,\n)\ngenre_window = Window(\n    Const(\"Выберите любимый жанр:\"),\n    Column(\n    Select(\n        text=Format(\"{item.emoji} {item.name}\"),\n        id=\"genre\",\n        items=genre_KEY,\n        # Alternatives:\n        # items=lambda d: d[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n        # items=F[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n        item_id_getter=id_getter,\n        on_click=step_genre,\n    ),\nCANCEL_EDIT\n),\n    state=EditAccount.genre,\n    getter=getter_profil,\n    preview_data=getter_profil,\n)\nfirst_instrument_window = Window(\n    Const(\"Выберите основной музыкальный инструмент:\"),\n    Column(\n    Select(\n        text=Format(\"{item.emoji} {item.name}\"),\n        id=\"first_instrument\",\n        items=Instrument_KEY,\n        # Alternatives:\n        # items=lambda d: d[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n        # items=F[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n        item_id_getter=id_getter,\n        on_click=step_first_instrument,\n    ),\n        CANCEL_EDIT),\n    state=EditAccount.first_instrument,\n    getter=getter_profil,\n    preview_data=getter_profil,\n)\nchoice_instrument_window = Window(\n    Const(\"Выберите дополнительный музыкальный инструмент:\"),\n    Column(\n    Select(\n        text=Format(\"{item.emoji} {item.name} (\"),\n        id=\"choice_instrument\",\n        items=Instrument_KEY,\n        # Alternatives:\n        # items=lambda d: d[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n        # items=F[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n        item_id_getter=id_getter,\n        on_click=step_choice_instrument,\n    ),\n        CANCEL_EDIT),\n    state=EditAccount.choice_instrument,\n    getter=getter_profil,\n    preview_data=getter_profil,\n)\n# choice_isFind_window = Window(\n#     Const(\"Выберите :\"),\n#     Select(\n#         text=Format(\"{item.emoji} {item.name} (\"),\n#         id=isFind_KEY,\n#         items=isFind_KEY,\n#         # Alternatives:\n#         # items=lambda d: d[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n#         # items=F[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n#         item_id_getter=id_getter,\n#         on_click=step_isFind,\n#     ),\n#     CANCEL_EDIT,\n#     state=Wizard.isFind,\n#     getter=getter,\n#     preview_data=getter,\n# )\nchoice_window = Window(\nConst(\"Вы состоите в группе?\"),\n            Select(\n            text=Format(\"{item.emoji} {item.name}\"),\n            id=\"choice\",\n            items=Choice_group_KEY,\n            # Alternatives:\n            # items=lambda d: d[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n            # items=F[OTHER_KEY][FRUITS_KEY],  # noqa: E800\n            item_id_getter=id_getter,\n            on_click=step_choice,\n            ),\n        CANCEL_EDIT,\n        state=EditAccount.choice,\n        getter=getter_profil,\n        preview_data=getter_profil,\n        )\nexperience_window = Window(\n    Const(\"Введите стаж пример(пять лет и одинадцать месяцев): 5.11:\"),\n    TextInput(id=\"experience\", on_success=step_experience),\n    CANCEL_EDIT,\n    state=EditAccount.experience,\n)\ndescription_window = Window(\n    Const(\"Введите описание:\"),\n    TextInput(id=\"description\", on_success=step_description),\n    CANCEL_EDIT,\n    state=EditAccount.description,\n)\nlink_window = Window(\n    Const(\"Введите ссылку на публичную страницу:\"),\n    TextInput(id=\"link\", on_success=step_link),\n    CANCEL_EDIT,\n    state=EditAccount.link,\n)\nexit_window = Window(\n    Const(\"Пожалуйста, проверте введённые данные\"),\n    Format(\"Name: {name}\"),\n    Format(\"City: {city}\"),\n    Format(\"Жанр: {genre}\"),\n    Format(\"Основной музыкальный инструмент: {first_instrument}\"),\n    Format(\"Дополнительный музыкальный инструмент: {choice_instrument}\"),\n    Format(\"isFind: {choice}\"),\n    Format(\"Стаж: {experience}\"),\n    Format(\"Description: {description}\"),\n    Format(\"Link: {link}\"),\n    SwitchTo(\n        Const(\"Изменить название\"),\n        state=EditAccount.name, id=\"to_name\",\n    ),\n    SwitchTo(\n        Const(\"Изменить город\"),\n        state=EditAccount.city, id=\"to_city\",\n    ),\n    SwitchTo(\n        Const(\"Изменить жанр\"),\n        state=EditAccount.genre, id=\"to_genre\",\n    ),\n    SwitchTo(\n        Const(\"Изменить основной музыкальный инструмент\"),\n        state=EditAccount.first_instrument, id=\"to_first_instrument\",\n    ),\n    SwitchTo(\n        Const(\"Изменить дополнительный музыкальный инструмент\"),\n        state=EditAccount.choice_instrument, id=\"to_choise_instrument\",\n    ),\n    SwitchTo(\n        Const(\"Изменить статус\"),\n        state=EditAccount.choice, id=\"to_choice\",\n    ),\n    SwitchTo(\n        Const(\"Изменить стаж\"),\n        state=EditAccount.experience, id=\"to_isFind\",\n    ),\n    SwitchTo(\n        Const(\"Изменить описание\"),\n        state=EditAccount.description, id=\"to_description\",\n    ),\n    SwitchTo(\n        Const(\"Изменить ссылку на публичную страницу\"),\n        state=EditAccount.link,\n        id=\"to_link\",\n    ),\n    Button(\n        Const(\"Сохранить\"),\n        id=\"to_save\",\n        on_click=EditAccount_user,\n    ),\n    Button(\n        Const(\"Отмена\"),\n        on_click=cancel_edit,\n        id=\"to_cancel_main\"),\n    state=EditAccount.preview,\n    getter=result_getter,\n    # getter=get_call_data,\n    parse_mode=\"html\",\n    )\n\nEditAccount_dialog = Dialog(\n                name_window,\n                city_window,\n                genre_window,\n                first_instrument_window,\n                choice_instrument_window,\n                choice_window,\n                experience_window,\n                description_window,\n                link_window,\n                exit_window,\n                launch_mode=LaunchMode.ROOT,)\n\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Telegram/bot_dialogs/edit_account.py b/Telegram/bot_dialogs/edit_account.py
+--- a/Telegram/bot_dialogs/edit_account.py	(revision cee0a17c1939a1822b7323efc14b5e7332c47e6b)
++++ b/Telegram/bot_dialogs/edit_account.py	(date 1713185844378)
+@@ -10,7 +10,7 @@
+ from Telegram.bot_dialogs.data import *
+ from Telegram.bot_dialogs.getter import getter_profil
+ from Telegram.bot_dialogs.states import EditAccount, Menu
+-from Telegram.bd import create_row, get_line_user, update_line_user
++from Telegram.data_base_functions.bd import create_row, get_line_user, update_line_user
+ from Telegram.db_user_temp import create_row_temp, get_line_user_temp, update_line_user_temp, delete_line_user_temp
+ 
+ 
+@@ -380,7 +380,7 @@
+     state=EditAccount.experience,
+ )
+ description_window = Window(
+-    Const("Введите описание:"),
++    Const("Пару слов о вас: "),
+     TextInput(id="description", on_success=step_description),
+     CANCEL_EDIT,
+     state=EditAccount.description,
+Index: Telegram/bot_dialogs/My_Group.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import requests\nfrom aiogram import F\nfrom aiogram.types import CallbackQuery, Message\nfrom aiogram_dialog import Dialog, LaunchMode, Window, DialogManager, StartMode\nfrom aiogram_dialog.widgets.input import TextInput\nfrom aiogram_dialog.widgets.kbd import Button, SwitchTo, Column, Select\nfrom aiogram_dialog.widgets.text import Const, Format\n\nfrom Telegram.bot_dialogs.data import FINISHED_KEY, choice_KEY, genre_KEY, main_instrument_KEY, choice_instrument_KEY, \\\n    Instrument_KEY, Choice_group_KEY, isAlredyRegister, Data_update_list, tg_id_user\nfrom Telegram.bot_dialogs.getter import Istr, getter\nfrom Telegram.bot_dialogs.states import Register, Menu\nfrom Telegram.bd import create_row, get_line_user\n\n\n\n\n\n\n\n\n# register_dialog = Dialog(\n#                 ,\n#                 launch_mode=LaunchMode.ROOT,)\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Telegram/bot_dialogs/My_Group.py b/Telegram/bot_dialogs/My_Group.py
+--- a/Telegram/bot_dialogs/My_Group.py	(revision cee0a17c1939a1822b7323efc14b5e7332c47e6b)
++++ b/Telegram/bot_dialogs/My_Group.py	(date 1713185844368)
+@@ -1,23 +1,9 @@
+ import requests
+-from aiogram import F
+ from aiogram.types import CallbackQuery, Message
+-from aiogram_dialog import Dialog, LaunchMode, Window, DialogManager, StartMode
+ from aiogram_dialog.widgets.input import TextInput
+-from aiogram_dialog.widgets.kbd import Button, SwitchTo, Column, Select
+ from aiogram_dialog.widgets.text import Const, Format
+ 
+-from Telegram.bot_dialogs.data import FINISHED_KEY, choice_KEY, genre_KEY, main_instrument_KEY, choice_instrument_KEY, \
+-    Instrument_KEY, Choice_group_KEY, isAlredyRegister, Data_update_list, tg_id_user
+-from Telegram.bot_dialogs.getter import Istr, getter
+ from Telegram.bot_dialogs.states import Register, Menu
+-from Telegram.bd import create_row, get_line_user
+-
+-
+-
+-
+-
+-
+-
+ 
+ # register_dialog = Dialog(
+ #                 ,
+Index: Telegram/bot_dialogs/help.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import shelve\nfrom dataclasses import dataclass\n\nimport requests\nfrom aiogram import F\nfrom aiogram.types import CallbackQuery, Message\nfrom aiogram_dialog import Dialog, LaunchMode, Window, DialogManager\nfrom aiogram_dialog.widgets.input import TextInput\nfrom aiogram_dialog.widgets.kbd import Button, SwitchTo, Column, Select, Start, ScrollingGroup, NumberedPager\nfrom aiogram_dialog.widgets.text import Const, Format, ScrollingText\n\nimport data\nfrom Telegram.bot_dialogs.common import MAIN_MENU_BUTTON\nfrom Telegram.bot_dialogs.data import *\nfrom Telegram.bot_dialogs.states import EditAccount, Menu, Search_m, Help\nfrom Telegram.bd import create_row, get_line_user, update_line_user\nfrom Telegram.db_user_temp import create_row_temp, get_line_user_temp, update_line_user_temp, delete_line_user_temp\n\nVERY_LONG_TEXT = \"\"\"\\\nТут будет справка)\n\nПо вопросам и предложениям по улучшению бота @RM1238g @stassmol\n\"\"\"\n\nwindow_one = Window(\n        Const(\"Справка:\\n\"),\n        ScrollingText(\n            text=Const(VERY_LONG_TEXT),\n            id=\"text_scroll\",\n            page_size=1000,\n        ),\n        NumberedPager(\n            scroll=\"text_scroll\",\n        ),\n        MAIN_MENU_BUTTON,\n        state=Help.MAIN,\n)\n\n\ndialog_help = Dialog(window_one, launch_mode=LaunchMode.ROOT)
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Telegram/bot_dialogs/help.py b/Telegram/bot_dialogs/help.py
+--- a/Telegram/bot_dialogs/help.py	(revision cee0a17c1939a1822b7323efc14b5e7332c47e6b)
++++ b/Telegram/bot_dialogs/help.py	(date 1713185844345)
+@@ -13,7 +13,7 @@
+ from Telegram.bot_dialogs.common import MAIN_MENU_BUTTON
+ from Telegram.bot_dialogs.data import *
+ from Telegram.bot_dialogs.states import EditAccount, Menu, Search_m, Help
+-from Telegram.bd import create_row, get_line_user, update_line_user
++from Telegram.data_base_functions.bd import create_row, get_line_user, update_line_user
+ from Telegram.db_user_temp import create_row_temp, get_line_user_temp, update_line_user_temp, delete_line_user_temp
+ 
+ VERY_LONG_TEXT = """\
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"d628920e-59fa-4f69-962f-ac51c7353f78\" name=\"Changes\" comment=\"0.0.46\">\n      <change afterPath=\"$PROJECT_DIR$/Telegram/background.py\" afterDir=\"false\" />\n      <change afterPath=\"$PROJECT_DIR$/Telegram/enter_bot_value.py\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/Telegram/bot.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Telegram/bot.py\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/Telegram/bot_dialogs/common.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Telegram/bot_dialogs/common.py\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/Telegram/bot_dialogs/data.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Telegram/bot_dialogs/data.py\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/Telegram/bot_dialogs/register.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Telegram/bot_dialogs/register.py\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/Telegram/bot_dialogs/search_dialog.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Telegram/bot_dialogs/search_dialog.py\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/Telegram/bot_dialogs/states.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Telegram/bot_dialogs/states.py\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/Telegram/data/second.SQLite\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Telegram/data/second.SQLite\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/Telegram/data/second_user_info.SQLite\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Telegram/data/second_user_info.SQLite\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/Telegram/data/second_user_temp.SQLite\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Telegram/data/second_user_temp.SQLite\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/Telegram/search_function.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/Telegram/search_function.py\" afterDir=\"false\" />\n      <change beforePath=\"$PROJECT_DIR$/main.py\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/main.py\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"Python Script\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"GitHubPullRequestSearchHistory\">{\n  &quot;lastFilter&quot;: {\n    &quot;state&quot;: &quot;OPEN&quot;,\n    &quot;assignee&quot;: &quot;ROSTGG&quot;\n  }\n}</component>\n  <component name=\"GithubPullRequestsUISettings\">{\n  &quot;selectedUrlAndAccountId&quot;: {\n    &quot;url&quot;: &quot;https://github.com/undervalued-inc/Second.git&quot;,\n    &quot;accountId&quot;: &quot;0e3c20e2-4e3d-4f3b-9221-6a410ccd1b75&quot;\n  }\n}</component>\n  <component name=\"HighlightingSettingsPerFile\">\n    <setting file=\"file://$PROJECT_DIR$/Telegram/bd.py\" root0=\"FORCE_HIGHLIGHTING\" />\n    <setting file=\"file://$PROJECT_DIR$/Telegram/bot.py\" root0=\"FORCE_HIGHLIGHTING\" />\n    <setting file=\"file://$PROJECT_DIR$/Telegram/bot_dialogs/data.py\" root0=\"FORCE_HIGHLIGHTING\" />\n    <setting file=\"file://$PROJECT_DIR$/Telegram/bot_dialogs/edit_account.py\" root0=\"FORCE_HIGHLIGHTING\" />\n    <setting file=\"file://$PROJECT_DIR$/Telegram/bot_dialogs/menu.py\" root0=\"FORCE_HIGHLIGHTING\" />\n    <setting file=\"file://$PROJECT_DIR$/Telegram/bot_dialogs/register.py\" root0=\"FORCE_HIGHLIGHTING\" />\n    <setting file=\"file://$PROJECT_DIR$/Telegram/bot_dialogs/states.py\" root0=\"FORCE_HIGHLIGHTING\" />\n  </component>\n  <component name=\"MarkdownSettingsMigration\">\n    <option name=\"stateVersion\" value=\"1\" />\n  </component>\n  <component name=\"ProjectColorInfo\">{\n  &quot;associatedIndex&quot;: 6\n}</component>\n  <component name=\"ProjectId\" id=\"2eHwj70dF3gmUauszfczPJFRSl4\" />\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\">{\n  &quot;keyToString&quot;: {\n    &quot;Python.Bot.executor&quot;: &quot;Run&quot;,\n    &quot;Python.bd.executor&quot;: &quot;Run&quot;,\n    &quot;Python.bot.executor&quot;: &quot;Run&quot;,\n    &quot;Python.register.executor&quot;: &quot;Run&quot;,\n    &quot;Python.search.executor&quot;: &quot;Run&quot;,\n    &quot;Python.search.py.executor&quot;: &quot;Run&quot;,\n    &quot;Python.start bot.executor&quot;: &quot;Run&quot;,\n    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,\n    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,\n    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,\n    &quot;git-widget-placeholder&quot;: &quot;main&quot;,\n    &quot;last_opened_file_path&quot;: &quot;/home/rostislav/[Second]/main.py&quot;,\n    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,\n    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,\n    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,\n    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,\n    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,\n    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;\n  },\n  &quot;keyToStringList&quot;: {\n    &quot;DatabaseDriversLRU&quot;: [\n      &quot;sqlite&quot;\n    ]\n  }\n}</component>\n  <component name=\"RecentsManager\">\n    <key name=\"CopyFile.RECENT_KEYS\">\n      <recent name=\"$PROJECT_DIR$/Telegram\" />\n      <recent name=\"$PROJECT_DIR$\" />\n    </key>\n    <key name=\"MoveFile.RECENT_KEYS\">\n      <recent name=\"$PROJECT_DIR$/Telegram/\" />\n      <recent name=\"$PROJECT_DIR$/Telegram\" />\n      <recent name=\"$PROJECT_DIR$/Telegram/data\" />\n    </key>\n  </component>\n  <component name=\"RunAnythingCache\">\n    <option name=\"myCommands\">\n      <command value=\"derl\" />\n      <command value=\"delete_line_user_temp(1041354811)\" />\n    </option>\n  </component>\n  <component name=\"RunManager\" selected=\"Python.Bot\">\n    <configuration name=\"Bot\" type=\"PythonConfigurationType\" factoryName=\"Python\">\n      <module name=\"[Second]\" />\n      <option name=\"ENV_FILES\" value=\"\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"\" />\n      <option name=\"SDK_NAME\" value=\"Python 3.11 (3)\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"\" />\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/main.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n    <configuration name=\"search.py\" type=\"PythonConfigurationType\" factoryName=\"Python\" activateToolWindowBeforeRun=\"false\">\n      <module name=\"Second\" />\n      <option name=\"ENV_FILES\" value=\"\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"$PROJECT_DIR$/Telegram/outher_function\" />\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"false\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"false\" />\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/Telegram/search_function.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n    <configuration name=\"start bot\" type=\"PythonConfigurationType\" factoryName=\"Python\">\n      <module name=\"Second\" />\n      <option name=\"ENV_FILES\" value=\"\" />\n      <option name=\"INTERPRETER_OPTIONS\" value=\"\" />\n      <option name=\"PARENT_ENVS\" value=\"true\" />\n      <envs>\n        <env name=\"PYTHONUNBUFFERED\" value=\"1\" />\n      </envs>\n      <option name=\"SDK_HOME\" value=\"\" />\n      <option name=\"WORKING_DIRECTORY\" value=\"\" />\n      <option name=\"IS_MODULE_SDK\" value=\"false\" />\n      <option name=\"ADD_CONTENT_ROOTS\" value=\"true\" />\n      <option name=\"ADD_SOURCE_ROOTS\" value=\"true\" />\n      <EXTENSION ID=\"PythonCoverageRunConfigurationExtension\" runner=\"coverage.py\" />\n      <option name=\"SCRIPT_NAME\" value=\"$PROJECT_DIR$/Telegram/bot.py\" />\n      <option name=\"PARAMETERS\" value=\"\" />\n      <option name=\"SHOW_COMMAND_LINE\" value=\"false\" />\n      <option name=\"EMULATE_TERMINAL\" value=\"false\" />\n      <option name=\"MODULE_MODE\" value=\"false\" />\n      <option name=\"REDIRECT_INPUT\" value=\"false\" />\n      <option name=\"INPUT_FILE\" value=\"\" />\n      <method v=\"2\" />\n    </configuration>\n    <list>\n      <item itemvalue=\"Python.Bot\" />\n      <item itemvalue=\"Python.search.py\" />\n      <item itemvalue=\"Python.start bot\" />\n    </list>\n  </component>\n  <component name=\"SharedIndexes\">\n    <attachedChunks>\n      <set>\n        <option value=\"bundled-python-sdk-09665e90c3a7-b11f5e8da5ad-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-233.15026.15\" />\n      </set>\n    </attachedChunks>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"d628920e-59fa-4f69-962f-ac51c7353f78\" name=\"Changes\" comment=\"ROSTPC_0.0.15\" />\n      <created>1711574947798</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1711574947798</updated>\n      <workItem from=\"1711574949394\" duration=\"1240000\" />\n      <workItem from=\"1711630063598\" duration=\"11969000\" />\n      <workItem from=\"1711714632635\" duration=\"12096000\" />\n      <workItem from=\"1711796261190\" duration=\"10337000\" />\n      <workItem from=\"1711817164815\" duration=\"2408000\" />\n      <workItem from=\"1711877929049\" duration=\"10980000\" />\n      <workItem from=\"1711904947122\" duration=\"5240000\" />\n      <workItem from=\"1712005696822\" duration=\"2837000\" />\n      <workItem from=\"1712328963467\" duration=\"19000\" />\n      <workItem from=\"1712518806188\" duration=\"3636000\" />\n      <workItem from=\"1712648892425\" duration=\"28019000\" />\n      <workItem from=\"1712691786421\" duration=\"5701000\" />\n      <workItem from=\"1712741224229\" duration=\"5063000\" />\n      <workItem from=\"1712833422658\" duration=\"9446000\" />\n      <workItem from=\"1712863791299\" duration=\"15353000\" />\n      <workItem from=\"1713015506603\" duration=\"10000\" />\n      <workItem from=\"1713090019653\" duration=\"18000\" />\n      <workItem from=\"1713096131231\" duration=\"6942000\" />\n    </task>\n    <task id=\"LOCAL-00001\" summary=\"ROSTPC_0.0.16\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1711575025997</created>\n      <option name=\"number\" value=\"00001\" />\n      <option name=\"presentableId\" value=\"LOCAL-00001\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1711575025997</updated>\n    </task>\n    <task id=\"LOCAL-00002\" summary=\"ROSTPC_0.0.17\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1711667898949</created>\n      <option name=\"number\" value=\"00002\" />\n      <option name=\"presentableId\" value=\"LOCAL-00002\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1711667898949</updated>\n    </task>\n    <task id=\"LOCAL-00003\" summary=\"ROSTPC_0.0.18\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1711720195513</created>\n      <option name=\"number\" value=\"00003\" />\n      <option name=\"presentableId\" value=\"LOCAL-00003\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1711720195513</updated>\n    </task>\n    <task id=\"LOCAL-00004\" summary=\"ROSTPC_0.0.19\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1711723787801</created>\n      <option name=\"number\" value=\"00004\" />\n      <option name=\"presentableId\" value=\"LOCAL-00004\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1711723787801</updated>\n    </task>\n    <task id=\"LOCAL-00005\" summary=\"ROSTPC_0.0.20\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1711731619643</created>\n      <option name=\"number\" value=\"00005\" />\n      <option name=\"presentableId\" value=\"LOCAL-00005\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1711731619643</updated>\n    </task>\n    <task id=\"LOCAL-00006\" summary=\"ROSTPC_0.0.21 Worked Register and edit_accound\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1711894289089</created>\n      <option name=\"number\" value=\"00006\" />\n      <option name=\"presentableId\" value=\"LOCAL-00006\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1711894289089</updated>\n    </task>\n    <task id=\"LOCAL-00007\" summary=\"ROSTPC_0.0.21 Worked Register and edit_account\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1711894307528</created>\n      <option name=\"number\" value=\"00007\" />\n      <option name=\"presentableId\" value=\"LOCAL-00007\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1711894307528</updated>\n    </task>\n    <task id=\"LOCAL-00008\" summary=\"ROSTPC_0.0.22 Worked Register and edit_account\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1711906185518</created>\n      <option name=\"number\" value=\"00008\" />\n      <option name=\"presentableId\" value=\"LOCAL-00008\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1711906185518</updated>\n    </task>\n    <task id=\"LOCAL-00009\" summary=\"ROSTPC_0.0.22 Update getter\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1711911991364</created>\n      <option name=\"number\" value=\"00009\" />\n      <option name=\"presentableId\" value=\"LOCAL-00009\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1711911991364</updated>\n    </task>\n    <task id=\"LOCAL-00010\" summary=\"Search\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1712522892450</created>\n      <option name=\"number\" value=\"00010\" />\n      <option name=\"presentableId\" value=\"LOCAL-00010\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1712522892450</updated>\n    </task>\n    <task id=\"LOCAL-00011\" summary=\"0.0.35 search worked\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1712658010415</created>\n      <option name=\"number\" value=\"00011\" />\n      <option name=\"presentableId\" value=\"LOCAL-00011\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1712658010415</updated>\n    </task>\n    <task id=\"LOCAL-00012\" summary=\"0.0.36 search worked 2\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1712695134382</created>\n      <option name=\"number\" value=\"00012\" />\n      <option name=\"presentableId\" value=\"LOCAL-00012\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1712695134382</updated>\n    </task>\n    <task id=\"LOCAL-00013\" summary=\"0.0.37\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1712762751885</created>\n      <option name=\"number\" value=\"00013\" />\n      <option name=\"presentableId\" value=\"LOCAL-00013\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1712762751885</updated>\n    </task>\n    <task id=\"LOCAL-00014\" summary=\"0.0.38\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1712773349727</created>\n      <option name=\"number\" value=\"00014\" />\n      <option name=\"presentableId\" value=\"LOCAL-00014\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1712773349727</updated>\n    </task>\n    <task id=\"LOCAL-00015\" summary=\"0.0.40\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1712865213872</created>\n      <option name=\"number\" value=\"00015\" />\n      <option name=\"presentableId\" value=\"LOCAL-00015\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1712865213872</updated>\n    </task>\n    <task id=\"LOCAL-00016\" summary=\"0.0.41\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1712868067671</created>\n      <option name=\"number\" value=\"00016\" />\n      <option name=\"presentableId\" value=\"LOCAL-00016\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1712868067671</updated>\n    </task>\n    <task id=\"LOCAL-00017\" summary=\"0.0.42\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1712868692386</created>\n      <option name=\"number\" value=\"00017\" />\n      <option name=\"presentableId\" value=\"LOCAL-00017\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1712868692386</updated>\n    </task>\n    <task id=\"LOCAL-00018\" summary=\"0.0.43\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1712869235055</created>\n      <option name=\"number\" value=\"00018\" />\n      <option name=\"presentableId\" value=\"LOCAL-00018\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1712869235055</updated>\n    </task>\n    <task id=\"LOCAL-00019\" summary=\"0.0.44\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1712907307154</created>\n      <option name=\"number\" value=\"00019\" />\n      <option name=\"presentableId\" value=\"LOCAL-00019\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1712907307154</updated>\n    </task>\n    <task id=\"LOCAL-00020\" summary=\"0.0.45\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1712909384144</created>\n      <option name=\"number\" value=\"00020\" />\n      <option name=\"presentableId\" value=\"LOCAL-00020\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1712909384144</updated>\n    </task>\n    <task id=\"LOCAL-00021\" summary=\"0.0.46\">\n      <option name=\"closed\" value=\"true\" />\n      <created>1712909952552</created>\n      <option name=\"number\" value=\"00021\" />\n      <option name=\"presentableId\" value=\"LOCAL-00021\" />\n      <option name=\"project\" value=\"LOCAL\" />\n      <updated>1712909952552</updated>\n    </task>\n    <option name=\"localTasksCounter\" value=\"22\" />\n    <servers />\n  </component>\n  <component name=\"TypeScriptGeneratedFilesManager\">\n    <option name=\"version\" value=\"3\" />\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State />\n          </value>\n        </entry>\n      </map>\n    </option>\n  </component>\n  <component name=\"VcsManagerConfiguration\">\n    <MESSAGE value=\"ROSTPC_0.0.15\" />\n    <MESSAGE value=\"ROSTPC_0.0.16\" />\n    <MESSAGE value=\"ROSTPC_0.0.17\" />\n    <MESSAGE value=\"ROSTPC_0.0.18\" />\n    <MESSAGE value=\"ROSTPC_0.0.19\" />\n    <MESSAGE value=\"ROSTPC_0.0.20\" />\n    <MESSAGE value=\"ROSTPC_0.0.21 Worked Register and edit_accound\" />\n    <MESSAGE value=\"ROSTPC_0.0.21 Worked Register and edit_account\" />\n    <MESSAGE value=\"ROSTPC_0.0.22 Worked Register and edit_account\" />\n    <MESSAGE value=\"ROSTPC_0.0.22 Update getter\" />\n    <MESSAGE value=\"bd\" />\n    <MESSAGE value=\"Search\" />\n    <MESSAGE value=\"0.0.35 search worked\" />\n    <MESSAGE value=\"0.0.36 search worked 2\" />\n    <MESSAGE value=\"0.0.37\" />\n    <MESSAGE value=\"0.0.38\" />\n    <MESSAGE value=\"0.0.40\" />\n    <MESSAGE value=\"0.0.41\" />\n    <MESSAGE value=\"0.0.42\" />\n    <MESSAGE value=\"0.0.43\" />\n    <MESSAGE value=\"0.0.44\" />\n    <MESSAGE value=\"0.0.45\" />\n    <MESSAGE value=\"0.0.46\" />\n    <option name=\"LAST_COMMIT_MESSAGE\" value=\"0.0.46\" />\n  </component>\n  <component name=\"com.intellij.coverage.CoverageDataManagerImpl\">\n    <SUITE FILE_PATH=\"coverage/_Second_$Bot.coverage\" NAME=\"Bot Coverage Results\" MODIFIED=\"1713111870360\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"true\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"\" />\n    <SUITE FILE_PATH=\"coverage/Second$start_bot.coverage\" NAME=\"start bot Coverage Results\" MODIFIED=\"1712008204463\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"true\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"\" />\n    <SUITE FILE_PATH=\"coverage/Second$register.coverage\" NAME=\"register Coverage Results\" MODIFIED=\"1711630495285\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"true\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$/Telegram/bot_dialogs\" />\n    <SUITE FILE_PATH=\"coverage/Second$bd.coverage\" NAME=\"bd Coverage Results\" MODIFIED=\"1712157149762\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"true\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$/Telegram\" />\n    <SUITE FILE_PATH=\"coverage/_Second_$search.coverage\" NAME=\"search Coverage Results\" MODIFIED=\"1712615085429\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"true\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$/Telegram\" />\n    <SUITE FILE_PATH=\"coverage/Second$search.coverage\" NAME=\"search Coverage Results\" MODIFIED=\"1712522761485\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"false\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$/Telegram\" />\n    <SUITE FILE_PATH=\"coverage/Second$search_py.coverage\" NAME=\"search.py Coverage Results\" MODIFIED=\"1712149277054\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"true\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$/Telegram/outher_function\" />\n    <SUITE FILE_PATH=\"coverage/Second$bot.coverage\" NAME=\"bot Coverage Results\" MODIFIED=\"1711714912047\" SOURCE_PROVIDER=\"com.intellij.coverage.DefaultCoverageFileProvider\" RUNNER=\"coverage.py\" COVERAGE_BY_TEST_ENABLED=\"true\" COVERAGE_TRACING_ENABLED=\"false\" WORKING_DIRECTORY=\"$PROJECT_DIR$/Telegram\" />\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision cee0a17c1939a1822b7323efc14b5e7332c47e6b)
++++ b/.idea/workspace.xml	(date 1713185898289)
+@@ -4,21 +4,20 @@
+     <option name="autoReloadType" value="SELECTIVE" />
+   </component>
+   <component name="ChangeListManager">
+-    <list default="true" id="d628920e-59fa-4f69-962f-ac51c7353f78" name="Changes" comment="0.0.46">
+-      <change afterPath="$PROJECT_DIR$/Telegram/background.py" afterDir="false" />
+-      <change afterPath="$PROJECT_DIR$/Telegram/enter_bot_value.py" afterDir="false" />
++    <list default="true" id="d628920e-59fa-4f69-962f-ac51c7353f78" name="Changes" comment="0.0.47">
++      <change afterPath="$PROJECT_DIR$/Telegram/bot_dialogs/register_group.py" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Telegram/data_base_functions/bd_request_group.py" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Telegram/bd.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/data_base_functions/bd.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Telegram/bd_connections.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/data_base_functions/bd_connections.py" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/Telegram/bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bot.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Telegram/bot_dialogs/common.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bot_dialogs/common.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Telegram/bot_dialogs/data.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bot_dialogs/data.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Telegram/bot_dialogs/My_Group.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bot_dialogs/My_Group.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Telegram/bot_dialogs/edit_account.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bot_dialogs/edit_account.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Telegram/bot_dialogs/help.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bot_dialogs/help.py" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/Telegram/bot_dialogs/register.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bot_dialogs/register.py" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/Telegram/bot_dialogs/search_dialog.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bot_dialogs/search_dialog.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Telegram/bot_dialogs/states.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bot_dialogs/states.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Telegram/data/second.SQLite" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/data/second.SQLite" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Telegram/data/second_user_info.SQLite" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/data/second_user_info.SQLite" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Telegram/data/second_user_temp.SQLite" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/data/second_user_temp.SQLite" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Telegram/search_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/search_function.py" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Telegram/db_user_info.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/data_base_functions/db_user_info.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Telegram/db_user_temp.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/data_base_functions/db_user_temp.py" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -100,6 +99,7 @@
+       <recent name="$PROJECT_DIR$" />
+     </key>
+     <key name="MoveFile.RECENT_KEYS">
++      <recent name="$PROJECT_DIR$/Telegram/data_base_functions" />
+       <recent name="$PROJECT_DIR$/Telegram/" />
+       <recent name="$PROJECT_DIR$/Telegram" />
+       <recent name="$PROJECT_DIR$/Telegram/data" />
+@@ -221,6 +221,8 @@
+       <workItem from="1713015506603" duration="10000" />
+       <workItem from="1713090019653" duration="18000" />
+       <workItem from="1713096131231" duration="6942000" />
++      <workItem from="1713122839647" duration="2145000" />
++      <workItem from="1713184865802" duration="1028000" />
+     </task>
+     <task id="LOCAL-00001" summary="ROSTPC_0.0.16">
+       <option name="closed" value="true" />
+@@ -390,7 +392,15 @@
+       <option name="project" value="LOCAL" />
+       <updated>1712909952552</updated>
+     </task>
+-    <option name="localTasksCounter" value="22" />
++    <task id="LOCAL-00022" summary="0.0.47">
++      <option name="closed" value="true" />
++      <created>1713123024717</created>
++      <option name="number" value="00022" />
++      <option name="presentableId" value="LOCAL-00022" />
++      <option name="project" value="LOCAL" />
++      <updated>1713123024717</updated>
++    </task>
++    <option name="localTasksCounter" value="23" />
+     <servers />
+   </component>
+   <component name="TypeScriptGeneratedFilesManager">
+@@ -431,7 +441,8 @@
+     <MESSAGE value="0.0.44" />
+     <MESSAGE value="0.0.45" />
+     <MESSAGE value="0.0.46" />
+-    <option name="LAST_COMMIT_MESSAGE" value="0.0.46" />
++    <MESSAGE value="0.0.47" />
++    <option name="LAST_COMMIT_MESSAGE" value="0.0.47" />
+   </component>
+   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+     <SUITE FILE_PATH="coverage/_Second_$Bot.coverage" NAME="Bot Coverage Results" MODIFIED="1713111870360" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+Index: Telegram/bot_dialogs/register_group.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Telegram/bot_dialogs/register_group.py b/Telegram/bot_dialogs/register_group.py
+new file mode 100644
+--- /dev/null	(date 1713185844352)
++++ b/Telegram/bot_dialogs/register_group.py	(date 1713185844352)
+@@ -0,0 +1,497 @@
++import requests
++from aiogram import F, Bot
++from aiogram.exceptions import TelegramBadRequest
++from aiogram.types import CallbackQuery
++from aiogram_dialog import Dialog, LaunchMode, Window, DialogManager, StartMode
++from aiogram_dialog.widgets.input import TextInput
++from aiogram_dialog.widgets.kbd import Button, SwitchTo, Column, Select, Url
++from aiogram_dialog.widgets.text import Const, Format
++
++# from Telegram.bot import bot
++from Telegram.bot_dialogs.data import FINISHED_KEY, choice_KEY, genre_KEY, main_instrument_KEY, choice_instrument_KEY, \
++    Instrument_KEY, Choice_group_KEY, isAlredyRegister, Data_update_list, Istr
++from Telegram.bot_dialogs.getter import getter_profil
++from Telegram.bot_dialogs.states import Register, Menu
++from Telegram.data_base_functions.bd import create_row
++from Telegram.data_base_functions.db_user_info import create_row_userinfo
++
++bot = Bot(token="6752526100:AAFCSA3zE7LTV88AP68ozKPd90DxJ14Upks")
++
++
++def id_getter(istr: Istr) -> str:
++    return istr.id
++
++CANCEL_EDIT = SwitchTo(
++    Const("Отменить редактирование"),
++    when=F["dialog_data"][FINISHED_KEY],
++    id="cnl_edt",
++    state=Register.preview,
++)
++
++async def get_call_data(dialog_manager: DialogManager, **kwargs):
++    return dialog_manager.dialog_data
++# async def Choice_button(event, widget, dialog_manager: DialogManager, *_):
++#     # await dialog_manager
++#     t = dialog_manager.dialog_data..get("")
++#     t = dialog_manager.load_data()
++
++# async def next_or_end(event_from_user: CallbackQuery, widget, dialog_manager: DialogManager, *_):
++#     # print(event_from_user.from_user.id)
++#     # print(event_from_user.u)
++#     # id_user = dialog_manager.dialog_data["user_id"]
++
++# async def step_choice(event, widget, dialog_manager: DialogManager,item_id: str, *_):
++#     dialog_manager.dialog_data[choice_KEY] = item_id
++#     if dialog_manager.dialog_data.get(FINISHED_KEY):
++#         await dialog_manager.switch_to(Wizard.preview)
++#     else:
++#         await dialog_manager.switch_to(Wizard.name)
++
++# async def step_go_edit_akkount(callback: CallbackQuery, dialog_manager: DialogManager,*_):
++#     dialog_manager.dialog_data[isAlredyRegister] = True
++#     # dialog_manager.dialog_data[choice_KEY] = item_id
++#     data = get_line_user(callback.from_user.id)
++#     dialog_manager.dialog_data[Data_update_list] = data
++#     await dialog_manager.start(Register.preview)
++async def step_name(callback: CallbackQuery, widget, dialog_manager: DialogManager,item_id: str, *_):
++    # dialog_manager.dialog_data[choice_KEY] = item_id
++    if len(item_id) <= 30:
++        create_row_userinfo(dialog_manager.event.from_user.id, dialog_manager.event.from_user.username)
++        try:
++            dialog_manager.dialog_data[Data_update_list][1] = item_id
++        except Exception as e:
++            print(e)
++        try:
++            if dialog_manager.dialog_data[FINISHED_KEY]:
++                await dialog_manager.switch_to(Register.preview)
++            else:
++                dialog_manager.dialog_data[FINISHED_KEY] = False
++                await dialog_manager.switch_to(Register.city)
++        except:
++            dialog_manager.dialog_data[FINISHED_KEY] = False
++            await dialog_manager.switch_to(Register.city)
++    else:
++        await callback.answer("Введите имя по короче меньше 30 сиволов включая побелы")
++        await dialog_manager.switch_to(Register.name)
++
++async def step_city(callback: CallbackQuery, widget, dialog_manager: DialogManager,item_id: str, *_):
++    if len(item_id) <= 60:
++        if dialog_manager.dialog_data[FINISHED_KEY]:
++            await dialog_manager.switch_to(Register.preview)
++        else:
++            await dialog_manager.switch_to(Register.genre)
++    else:
++        await callback.answer("Введите город по короче меньше 60 сиволов включая побелы")
++        await dialog_manager.switch_to(Register.city)
++async def step_genre(event, widget, dialog_manager: DialogManager, item_id: str, *_):
++    dialog_manager.dialog_data[genre_KEY] = item_id
++    if dialog_manager.dialog_data[FINISHED_KEY]:
++        await dialog_manager.switch_to(Register.preview)
++    else:
++        await dialog_manager.switch_to(Register.first_instrument)
++
++async def step_first_instrument(event, widget, dialog_manager: DialogManager, item_id: str, *_):
++    dialog_manager.dialog_data[main_instrument_KEY] = item_id
++    if dialog_manager.dialog_data[FINISHED_KEY]:
++        await dialog_manager.switch_to(Register.preview)
++    else:
++        await dialog_manager.switch_to(Register.choice_instrument)
++async def step_choice_instrument(event, widget, dialog_manager: DialogManager, item_id: str, *_):
++    dialog_manager.dialog_data[choice_instrument_KEY] = item_id
++    if dialog_manager.dialog_data[FINISHED_KEY]:
++        await dialog_manager.switch_to(Register.preview)
++    else:
++        await dialog_manager.switch_to(Register.choice)
++async def step_choice(event, widget, dialog_manager: DialogManager, item_id: str, *_):
++    dialog_manager.dialog_data[choice_KEY] = item_id
++    if dialog_manager.dialog_data[FINISHED_KEY]:
++        await dialog_manager.switch_to(Register.preview)
++    else:
++        await dialog_manager.switch_to(Register.experience)
++async def step_experience(callback: CallbackQuery, widget, dialog_manager: DialogManager, item_id: str, *_):
++    try:
++        if item_id.split(".")[0].isdigit() == False:
++            raise Exception
++        elif item_id.split(".")[1].isdigit() == False:
++            raise Exception
++        elif int(item_id.split(".")[1]) > 12:
++            await callback.answer("дед у нас 12 месяцев https://www.youtube.com/watch?v=MxEc7YWJCvk")
++            await dialog_manager.switch_to(Register.experience)
++        elif int(item_id.split(".")[0]) >= 90:
++            await callback.answer("прости дед у нас максимум 90 лет")
++            await dialog_manager.switch_to(Register.experience)
++        else:
++            if dialog_manager.dialog_data[FINISHED_KEY]:
++                await dialog_manager.switch_to(Register.preview)
++            else:
++                await dialog_manager.switch_to(Register.description)
++            # data = get_line_user_temp(dialog_manager.event.from_user.id)
++            # update_line_user_temp(dialog_manager.event.from_user.id, data[2], data[3], data[4], data[5], data[6], data[7],
++            #                       item_id, data[9], data[10])
++            # await dialog_manager.switch_to(Register.preview)
++    except:
++        await callback.answer("Вы ввели данное значение не правильно, пожалуйста внимателенее прочитайте пример!")
++        await dialog_manager.switch_to(Register.experience)
++async def step_description(callback: CallbackQuery, widget, dialog_manager: DialogManager, item_id: str, *_):
++    if len(item_id) <= 300:
++        if dialog_manager.dialog_data[FINISHED_KEY]:
++            await dialog_manager.switch_to(Register.preview)
++        else:
++            await dialog_manager.switch_to(Register.link)
++    else:
++        await callback.answer("Введите описание по короче меньше 300 сиволов включая побелы")
++        await dialog_manager.switch_to(Register.description)
++async def step_link(callback: CallbackQuery, widget, dialog_manager: DialogManager, item_id: str, *_):
++    try:
++        check = requests.get(item_id).status_code
++        if check == 404:
++            await callback.answer("НЕ КОРЕКТНАЯ ССЫЛКА небыло получено ответа от сайта")
++            await dialog_manager.switch_to(Register.link)
++        else:
++            dialog_manager.dialog_data[isAlredyRegister] = True
++            await dialog_manager.switch_to(Register.preview)
++    except:
++        await callback.answer("НЕ КОРЕКТНАЯ ССЫЛКА пример:https://github.com/ROSTGG")
++        await dialog_manager.switch_to(Register.link)
++
++    # await next_or_end(event, widget, dialog_manager, *_)
++# async def finaly_link(event, widget, dialog_manager: DialogManager, item_id: str, *_):
++#     dialog_manager.dialog_data[FINISHED_KEY] = True
++#     await dialog_manager.switch_to(Wizard.preview)
++    # await next_or_end(event, widget, dialog_manager, *_)
++# async def step_Ffind(event, widget, dialog_manager: DialogManager,item_id: str, *_):
++#     dialog_manager.dialog_data["Ffind_id"] = item_id
++#     await next_or_end(event, widget, dialog_manager, *_)
++
++async def result_getter(dialog_manager: DialogManager, **kwargs):
++    dialog_manager.dialog_data[FINISHED_KEY] = True
++    genre, first_instrument, choice_instrument, choice = None, None, None, None
++    try:
++        genre = dialog_manager.dialog_data[genre_KEY]
++        first_instrument = dialog_manager.dialog_data[main_instrument_KEY]
++        choice_instrument = dialog_manager.dialog_data[choice_instrument_KEY]
++        choice = dialog_manager.dialog_data[choice_KEY]
++    except:
++        pass
++    data = await getter_profil()
++    for i in data[genre_KEY]:
++        if i.id == genre:
++            genre = i.name
++    for i in data[Instrument_KEY]:
++        if i.id == first_instrument:
++            first_instrument = i.name
++    for i in data[Instrument_KEY]:
++        if i.id == choice_instrument:
++            choice_instrument = i.name
++    for i in data[Choice_group_KEY]:
++        if i.id == choice:
++            choice = i.name
++
++    return {
++        "name": dialog_manager.find("name").get_value(),
++        "city": dialog_manager.find("city").get_value(),
++        "genre": genre,
++        "first_instrument": first_instrument,
++        "choice_instrument": choice_instrument,
++        "choice": choice,
++        "experience": dialog_manager.find("experience").get_value(),
++        "description": dialog_manager.find("description").get_value(),
++        "link": dialog_manager.find("link").get_value(),
++    }
++
++async def clear_chat(callback: CallbackQuery, dialog_manager: DialogManager):
++    try:
++        # Все сообщения, начиная с текущего и до первого (message_id = 0)
++        for i in range(dialog_manager.event.message_id, 0, -1):
++            # loop = asyncio.get_event_loop()
++            # forecast = loop.run_until_complete(bot.delete_message(dialog_manager.event.from_user.id, i))
++            # loop.close()
++            await bot.delete_message(dialog_manager.event.from_user.id, i)
++    except TelegramBadRequest as ex:
++        # Если сообщение не найдено (уже удалено или не существует),
++        # код ошибки будет "Bad Request: message to delete not found"
++        if ex.message == "Bad Request: message to delete not found":
++            print("Все сообщения удалены")
++        else:
++            print(ex.message)
++async def register_user(callback: CallbackQuery, widj, dialog_manager: DialogManager, **kwargs):
++    # find_text = str(dialog_manager.find("find").get_checked()).replace("]", "").replace("'", "").replace("[", "")
++    # if dialog_manager.dialog_data[isFind_KEY] == "yes":
++    #     TisFind = True
++    # else:
++    #     TisFind = False
++    # if dialog_manager.dialog_data[choice_KEY] == "person":
++    #     choice = 1301150
++    # else:
++    #     choice = 1301151
++    # await callback.answer("Регистрация начилась")
++    # r = new_str(tg_id=str(callback.from_user.id),
++    #         name=dialog_manager.find("name").get_value(),
++    #         city=dialog_manager.find("city").get_value(),
++    #         find=find_text,
++    #         isFind=TisFind,
++    #         status=choice,
++    #         description=dialog_manager.find("description").get_value(),
++    #         link=dialog_manager.find("link").get_value(),)
++    # print("Exit code from data base"+str(r))
++    # await dialog_manager.start(Menu_st.menu_s, mode=StartMode.NEW_STACK)
++    # if dialog_manager.dialog_data[choice_KEY] == "person":
++    #     choice = "Музыкант 🎶"
++    # else:
++    #     choice = "Группа 🧾"
++    # if dialog_manager.dialog_data[isFind_KEY] == "yes":
++    #     TisFind = "Вы пытетесь найти группу"
++    # else:
++    #     TisFind = "Вы НЕ пытетесь найти группу"
++    # first_instrument = str(dialog_manager.find("first_instrument").get_value()).replace("]", "").replace("'", "").replace("[", "")
++    # choice_instrument = str(dialog_manager.find("choice_instrument").get_value()).replace("]", "").replace("'", "").replace("[", "")
++    # if dialog_manager.dialog_data[isFind_KEY] == "piano":
++    #     TFind = "Пианино"
++    # elif dialog_manager.dialog_data[isFind_KEY] == "guitar":
++    #     TFind = "Гитара"
++    # elif dialog_manager.dialog_data[isFind_KEY] == "bass_guitar":
++    #     TFind = "Басс гитара"
++    # else:
++    #     TFind = "Флейта"
++    # data = await getter_profil()
++    # for i in data[Instrument_KEY]:
++    #     if data[Instrument_KEY][i].id == main_instrument:
++    #         main_instrument = data[Instrument_KEY][i].name
++    # for i in data[Instrument_KEY]:
++    #     if data[Instrument_KEY][i].id == choice_instrument:
++    #         choice_instrument = data[Instrument_KEY][i].name
++    genre, main_instrument, choice_instrument, choice = None, None, None, None
++    try:
++        genre = dialog_manager.dialog_data[genre_KEY]
++        main_instrument = dialog_manager.dialog_data[main_instrument_KEY]
++        choice_instrument = dialog_manager.dialog_data[choice_instrument_KEY]
++        choice = dialog_manager.dialog_data[choice_KEY]
++    except:
++        pass
++
++    print("TG_ID: " + str(callback.from_user.id))
++    print(f"name: {dialog_manager.find('name').get_value()}\n",
++        f"city: {dialog_manager.find('city').get_value()}\n",
++        f"genre: {genre}\n",
++        f"first_instrument: {main_instrument}\n",
++        f"choice_instrument: {choice_instrument}\n",
++        f"choice: {choice}\n",
++        f"experience: {dialog_manager.find('experience').get_value()}\n",
++        f"description: {dialog_manager.find('description').get_value()}\n",
++        f"link: {dialog_manager.find('link').get_value()}\n")
++    data = create_row(tg_id=callback.from_user.id,
++               name=dialog_manager.find('name').get_value(),
++               city=dialog_manager.find('city').get_value(),
++               genre = genre,
++               main_inst = main_instrument,
++               choice_inst = choice_instrument,
++               choice = choice,
++               exp = dialog_manager.find('experience').get_value(),
++               des = dialog_manager.find('description').get_value(),
++               link = dialog_manager.find('link').get_value())
++    await callback.answer("Регистрация завершена")
++    # await clear_chat(callback, dialog_manager)
++    await dialog_manager.start(Menu.MAIN, mode=StartMode.NEW_STACK)
++
++
++info_bot_window = Window(
++    Const("Пожалуйста, запустите бота @notif_second_bot для уведомлений, "
++          "иначе могут возникнуть ошибки во время работы бота"),
++    Url(Const("БОТ"), Const("https://t.me/notif_second_bot")),
++    SwitchTo(text=Const("Я запустил(а) бота, начать дегистрацию"), id="to_next_name_from_info", state=Register.name),
++    CANCEL_EDIT,
++    state=Register.notif_bot,
++)
++
++name_window = Window(
++    Const("Введите ваше имя:"),
++    TextInput(id="name", on_success=step_name),
++    CANCEL_EDIT,
++    state=Register.name,
++)
++city_window = Window(
++    Const("Введите ваш город(город в котором вы проживаете):"),
++    TextInput(id="city", on_success=step_city),
++    CANCEL_EDIT,
++    state=Register.city,
++)
++genre_window = Window(
++    Const("Выберите любимый жанр:"),
++    Column(
++    Select(
++        text=Format("{item.emoji} {item.name}"),
++        id="genre",
++        items=genre_KEY,
++        # Alternatives:
++        # items=lambda d: d[OTHER_KEY][FRUITS_KEY],  # noqa: E800
++        # items=F[OTHER_KEY][FRUITS_KEY],  # noqa: E800
++        item_id_getter=id_getter,
++        on_click=step_genre,
++    )),
++    CANCEL_EDIT,
++    state=Register.genre,
++    getter=getter_profil,
++    preview_data=getter_profil,
++)
++first_instrument_window = Window(
++    Const("Выберите основной музыкальный инструмент:"),
++    Column(
++    Select(
++        text=Format("{item.emoji} {item.name}"),
++        id="first_instrument",
++        items=Instrument_KEY,
++        # Alternatives:
++        # items=lambda d: d[OTHER_KEY][FRUITS_KEY],  # noqa: E800
++        # items=F[OTHER_KEY][FRUITS_KEY],  # noqa: E800
++        item_id_getter=id_getter,
++        on_click=step_first_instrument,
++    )),
++    CANCEL_EDIT,
++    state=Register.first_instrument,
++    getter=getter_profil,
++    preview_data=getter_profil,
++)
++choice_instrument_window = Window(
++    Const("Выберите дополнительный музыкальный инструмент:"),
++    Column(
++    Select(
++        text=Format("{item.emoji} {item.name}"),
++        id="choice_instrument",
++        items=Instrument_KEY,
++        # Alternatives:
++        # items=lambda d: d[OTHER_KEY][FRUITS_KEY],  # noqa: E800
++        # items=F[OTHER_KEY][FRUITS_KEY],  # noqa: E800
++        item_id_getter=id_getter,
++        on_click=step_choice_instrument,
++    )),
++    CANCEL_EDIT,
++    state=Register.choice_instrument,
++    getter=getter_profil,
++    preview_data=getter_profil,
++)
++# choice_isFind_window = Window(
++#     Const("Выберите :"),
++#     Select(
++#         text=Format("{item.emoji} {item.name} ("),
++#         id=isFind_KEY,
++#         items=isFind_KEY,
++#         # Alternatives:
++#         # items=lambda d: d[OTHER_KEY][FRUITS_KEY],  # noqa: E800
++#         # items=F[OTHER_KEY][FRUITS_KEY],  # noqa: E800
++#         item_id_getter=id_getter,
++#         on_click=step_isFind,
++#     ),
++#     CANCEL_EDIT,
++#     state=Wizard.isFind,
++#     getter=getter,
++#     preview_data=getter,
++# )
++
++choice_window = Window(
++Const("Вы состоите в группе?"),
++            Select(
++            text=Format("{item.emoji} {item.name}"),
++            id="choice",
++            items=Choice_group_KEY,
++            # Alternatives:
++            # items=lambda d: d[OTHER_KEY][FRUITS_KEY],  # noqa: E800
++            # items=F[OTHER_KEY][FRUITS_KEY],  # noqa: E800
++            item_id_getter=id_getter,
++            on_click=step_choice,
++            ),
++        CANCEL_EDIT,
++        state=Register.choice,
++        getter=getter_profil,
++        preview_data=getter_profil,
++        )
++experience_window = Window(
++    Const("Введите стаж пример(пять лет и одинадцать месяцев): 5.11:"),
++    TextInput(id="experience", on_success=step_experience),
++    CANCEL_EDIT,
++    state=Register.experience,
++)
++description_window = Window(
++    Const("Пару слов о вас: "),
++    TextInput(id="description", on_success=step_description),
++    CANCEL_EDIT,
++    state=Register.description,
++)
++link_window = Window(
++    Const("Введите ссылку на публичную страницу:"),
++    TextInput(id="link", on_success=step_link),
++    CANCEL_EDIT,
++    state=Register.link,
++)
++exit_window = Window(
++    Const("Пожалуйста, проверте введённые данные"),
++    Format("Имя: {name}"),
++    Format("Город: {city}"),
++    Format("Жанр: {genre}"),
++    Format("Основной музыкальный инструмент: {first_instrument}"),
++    Format("Дополнительный музыкальный инструмент: {choice_instrument}"),
++    Format("Состоите ли вы в группе: {choice}"),
++    Format("Стаж: {experience}"),
++    Format("Описание: {description}"),
++    Format("Ссылка: {link}"),
++    SwitchTo(
++        Const("Изменить название"),
++        state=Register.name, id="to_name",
++    ),
++    SwitchTo(
++        Const("Изменить город"),
++        state=Register.city, id="to_city",
++    ),
++    SwitchTo(
++        Const("Изменить жанр"),
++        state=Register.genre, id="to_genre",
++    ),
++    SwitchTo(
++        Const("Изменить основной музыкальный инструмент"),
++        state=Register.first_instrument, id="to_first_instrument",
++    ),
++    SwitchTo(
++        Const("Изменить дополнительный музыкальный инструмент"),
++        state=Register.choice_instrument, id="to_choise_instrument",
++    ),
++    SwitchTo(
++        Const("Изменить статус"),
++        state=Register.choice, id="to_choice",
++    ),
++    SwitchTo(
++        Const("Изменить стаж"),
++        state=Register.experience, id="to_isFind",
++    ),
++    SwitchTo(
++        Const("Изменить описание"),
++        state=Register.description, id="to_description",
++    ),
++    SwitchTo(
++        Const("Изменить ссылку на публичную страницу"),
++        state=Register.link,
++        id="to_link",
++    ),
++    Button(
++        Const("Сохранить"),
++        id="to_save",
++        on_click=register_user,
++    ),
++    state=Register.preview,
++    getter=result_getter,
++    # getter=get_call_data,
++    parse_mode="html",
++    )
++
++gregister_dialog_228 = Dialog(
++                info_bot_window,
++                name_window,
++                city_window,
++                genre_window,
++                first_instrument_window,
++                choice_instrument_window,
++                choice_window,
++                experience_window,
++                description_window,
++                link_window,
++                exit_window,
++                launch_mode=LaunchMode.ROOT,)
++
+Index: Telegram/data_base_functions/bd_request_group.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Telegram/data_base_functions/bd_request_group.py b/Telegram/data_base_functions/bd_request_group.py
+new file mode 100644
+--- /dev/null	(date 1713185898133)
++++ b/Telegram/data_base_functions/bd_request_group.py	(date 1713185898133)
+@@ -0,0 +1,76 @@
++import sqlite3 as sql
++
++def get_group_from_id(id):
++    conn = sql.connect('../data/second.SQLite')
++    cur = conn.cursor()
++
++    cur.execute('SELECT * FROM bands WHERE id = ?', (id,))
++
++    ans = cur.fetchall()
++    ans[5] = ans[5].split('.')
++    ans[6] = ans[6].split('.')
++
++    return ans
++
++def get_card_from_id(id):
++    conn = sql.connect('../data/second.SQLite')
++    cur = conn.cursor()
++    cur.execute('SELECT * FROM bands WHERE id = ?', (id,))
++    group = cur.fetchall()[0]
++    users = ''
++    print(group)
++
++    for i in range(len(group[5].split("."))):
++        print(group[5].split(".")[i])
++        cur.execute('SELECT name FROM Clients WHERE tg_id = ?', (group[5].split(".")[i],))
++        users += f'\n           {cur.fetchall()[0][0]} - {group[6].split(".")[i]}'
++
++    cur.execute('SELECT name FROM Clients WHERE tg_id = ?', (group[4],))
++
++    admin = cur.fetchall()[0][0]
++
++    return f"""
++Название - {group[1]}
++Описание - {group[3]}
++Админ - {admin}
++Ссылка - {group[2]}
++Участники - {users}
++"""
++
++def  create_group(name: str, des: str, admin: int, link: str, users: list, inst: list):
++    conn = sql.connect('../data/second.SQLite')
++
++    cur = conn.cursor()
++
++    cur.execute('''
++CREATE TABLE IF NOT EXISTS bands (
++id INTEGER PRIMARY KEY,
++name TEXT NOT NULL,
++link TEXT NOT NULL, 
++des TEXT NOT NULL,
++admin INTEGER NOT NULL,
++users TEXT NOT NULL,
++inst TEXT NOT NULL
++)
++''')
++
++    us = '.'.join(users)
++    ins = '.'.join(inst)
++
++    cur.execute(
++        'INSERT INTO bands (name, link, des, admin, users, inst) 	VALUES (?, ?, ?, ?, ?, ?)',
++        (name, link, des, admin, us, ins))
++    conn.commit()
++    conn.close()
++
++def update_line_user(id, name: str, des: str, admin: int, link: str, users: list, inst: list):
++    bd = sql.connect('../data/second.SQLite')
++    cursor = bd.cursor()
++    users = '.'.join(users)
++    inst = '.'.join(inst)
++    cursor.execute(
++        'UPDATE bands SET name = ?, link = ?, des = ?, admin = ?, users = ?, inst = ? WHERE id = ?',
++        (name, link, des, admin, users, inst, id))
++    bd.commit()
++    bd.close()
++
+Index: Telegram/bot.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import asyncio\nimport logging\n\nfrom aiogram import Bot, Dispatcher, F, Router\nfrom aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError\nfrom aiogram.filters import ExceptionTypeFilter\nfrom aiogram.fsm.storage.memory import MemoryStorage\nfrom aiogram.types import ErrorEvent, Message, ReplyKeyboardRemove, CallbackQuery\n\nfrom aiogram_dialog import DialogManager, setup_dialogs, ShowMode, StartMode, Dialog, LaunchMode\nfrom aiogram_dialog.api.exceptions import UnknownIntent\n\n# from Telegram.bot_dialogs import search_dialog\nfrom Telegram.bot_dialogs.common import dialog_dont_work, send_notification\nfrom Telegram.bot_dialogs.data import isAlredyRegister, tg_id_user, Data_update_list, FINISHED_KEY, bot_main, \\\n    bot_for_test, bot_notification\nfrom Telegram.bot_dialogs.edit_account import EditAccount_dialog\nfrom Telegram.bot_dialogs.help import dialog_help\nfrom Telegram.bot_dialogs.menu import menu\nfrom Telegram.bot_dialogs.search_dialog import window_one, window_view\nfrom Telegram.bot_dialogs.states import Menu, Register\nfrom Telegram.bot_dialogs.register import gregister_dialog_228\nfrom Telegram.bd import isRegisterUser, get_line_user\nfrom Telegram.db_user_info import update_line_userinfo\nfrom Telegram.enter_bot_value import bot\n\n\n\nasync def clear_chat(callback: CallbackQuery, dialog_manager: DialogManager):\n    try:\n        # Все сообщения, начиная с текущего и до первого (message_id = 0)\n        for i in range(dialog_manager.event.message_id, 0, -1):\n            # loop = asyncio.get_event_loop()\n            # forecast = loop.run_until_complete(bot.delete_message(dialog_manager.event.from_user.id, i))\n            # loop.close()\n            await bot.delete_message(dialog_manager.event.from_user.id, i)\n    except TelegramBadRequest as ex:\n        # Если сообщение не найдено (уже удалено или не существует),\n        # код ошибки будет \"Bad Request: message to delete not found\"\n        if ex.message == \"Bad Request: message to delete not found\":\n            print(\"Все сообщения удалены\")\n\nasync def start(callback: CallbackQuery, dialog_manager: DialogManager):\n    # it is important to reset stack because user wants to restart everything\n    # await dialog_manager.start(Menu.MAIN, mode=StartMode.RESET_STACK)\n    print(callback.from_user.id)\n    # await send_notification(dialog_manager.event.from_user.id, \"dd\")\n    try:\n        # if request_\n        if isRegisterUser(callback.from_user.id):\n            await clear_chat(callback, dialog_manager)\n            update_line_userinfo(dialog_manager.event.from_user.id, dialog_manager.event.from_user.username)\n            await dialog_manager.start(Menu.MAIN, mode=StartMode.RESET_STACK)\n        else:\n            await clear_chat(callback, dialog_manager)\n            await dialog_manager.start(Register.notif_bot, mode=StartMode.RESET_STACK)\n    except:\n        await clear_chat(callback, dialog_manager)\n        await dialog_manager.start(Register.notif_bot, mode=StartMode.RESET_STACK)\n\n\nasync def on_unknown_intent(event: ErrorEvent, dialog_manager: DialogManager):\n    # Example of handling UnknownIntent Error and starting new dialog.\n    logging.error(\"Restarting dialog: %s\", event.exception)\n    if event.update.callback_query:\n        await event.update.callback_query.answer(\n            \"Bot process was restarted due to maintenance.\\n\"\n            \"Redirecting to main menu.\",\n        )\n        if event.update.callback_query.message:\n            try:\n                await event.update.callback_query.message.delete()\n            except TelegramBadRequest:\n                pass  # whatever\n    elif event.update.message:\n        await event.update.message.answer(\n            \"Bot process was restarted due to maintenance.\\n\"\n            \"Redirecting to main menu.\",\n            reply_markup=ReplyKeyboardRemove(),\n        )\n    await dialog_manager.start(\n        Register.name,\n        mode=StartMode.RESET_STACK,\n        show_mode=ShowMode.SEND,\n    )\n\n\ndialog_router = Router()\ndialog_router.include_routers(\n    menu,\n    gregister_dialog_228,\n    EditAccount_dialog,\n    dialog_dont_work,\n    dialog_help,\n    Dialog(window_one,window_view, launch_mode=LaunchMode.ROOT))\n\n\ndef setup_dp():\n    storage = MemoryStorage()\n    dp = Dispatcher(storage=storage)\n    dp.message.register(start, F.text == \"/start\")\n    dp.errors.register(\n        on_unknown_intent,\n        ExceptionTypeFilter(UnknownIntent),\n    )\n    dp.include_router(dialog_router)\n    setup_dialogs(dp)\n    return dp\n\n\nasync def main():\n    # real main\n    # logging.getLogger().setLevel(logging.DEBUG)\n    # logging.basicConfig(level=logging.INFO)\n    logging.basicConfig(level=logging.DEBUG)\n\n    dp = setup_dp()\n    await dp.start_polling(bot)\n\n\nif __name__ == '__main__':\n    asyncio.run(main())\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Telegram/bot.py b/Telegram/bot.py
+--- a/Telegram/bot.py	(revision cee0a17c1939a1822b7323efc14b5e7332c47e6b)
++++ b/Telegram/bot.py	(date 1713185844365)
+@@ -20,8 +20,8 @@
+ from Telegram.bot_dialogs.search_dialog import window_one, window_view
+ from Telegram.bot_dialogs.states import Menu, Register
+ from Telegram.bot_dialogs.register import gregister_dialog_228
+-from Telegram.bd import isRegisterUser, get_line_user
+-from Telegram.db_user_info import update_line_userinfo
++from Telegram.data_base_functions.bd import isRegisterUser, get_line_user
++from Telegram.data_base_functions.db_user_info import update_line_userinfo
+ from Telegram.enter_bot_value import bot
+ 
+ 
+diff --git a/Telegram/db_user_info.py b/Telegram/data_base_functions/db_user_info.py
+rename from Telegram/db_user_info.py
+rename to Telegram/data_base_functions/db_user_info.py
+diff --git a/Telegram/db_user_temp.py b/Telegram/data_base_functions/db_user_temp.py
+rename from Telegram/db_user_temp.py
+rename to Telegram/data_base_functions/db_user_temp.py
+diff --git a/Telegram/bd.py b/Telegram/data_base_functions/bd.py
+rename from Telegram/bd.py
+rename to Telegram/data_base_functions/bd.py
