@@ -5,9 +5,43 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d628920e-59fa-4f69-962f-ac51c7353f78" name="Changes" comment="BLACK LIST 3">
+      <change beforePath="$PROJECT_DIR$/.idea/[Second].iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/[Second].iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/88b08c06-7898-4962-9a87-3e76511d1b04.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/88b08c06-7898-4962-9a87-3e76511d1b04.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/966396e0-6061-4ddf-a09f-3ebecf077332.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/966396e0-6061-4ddf-a09f-3ebecf077332.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_09_04_2024,_13_20_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_09_04_2024,_13_50_[Changes]/second.SQLite" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_09_04_2024,_13_50_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_09_04_2024__13_20__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_09_04_2024__13_50__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_12_04_2024,_10_29_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_12_04_2024,_11_21_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_12_04_2024__10_29__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_12_04_2024__11_21__Changes_.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_14_04_2024,_15_02_[Changes]/second.SQLite" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_14_04_2024,_15_02_[Changes]/second_user_info.SQLite" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_14_04_2024,_15_02_[Changes]/second_user_temp.SQLite" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_14_04_2024,_15_02_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_14_04_2024__15_02__Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Telegram/bd_functions/bd.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bd_functions/bd.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Telegram/bd_functions/db_user_info.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bd_functions/db_user_info.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Telegram/logic/black_list_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/logic/black_list_logic.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Telegram/bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Telegram/bot_dialogs/My_Group.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Telegram/bot_dialogs/data.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bot_dialogs/data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Telegram/bot_dialogs/edit_account.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bot_dialogs/edit_account.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Telegram/bot_dialogs/register.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bot_dialogs/register.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Telegram/bot_dialogs/search_dialog.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bot_dialogs/search_dialog.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Telegram/data/second.SQLite" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/data/second.SQLite" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Telegram/data/second_user_info.SQLite" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/data/second_user_info.SQLite" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Telegram/data/second_user_temp.SQLite" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/data/second_user_temp.SQLite" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Telegram/logic/search_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/logic/search_function.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data.py" beforeDir="false" afterPath="$PROJECT_DIR$/old_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/mega/bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/example/mega/bot.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tgfile.py" beforeDir="false" afterPath="$PROJECT_DIR$/tgfile.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,34 +90,34 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.Bot.executor": "Run",
-    "Python.bd.executor": "Run",
-    "Python.black_list_logic.executor": "Run",
-    "Python.bot.executor": "Run",
-    "Python.register.executor": "Run",
-    "Python.search.executor": "Run",
-    "Python.search.py.executor": "Run",
-    "Python.start bot.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/home/rostislav/[Second]/main.py",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.Bot.executor&quot;: &quot;Run&quot;,
+    &quot;Python.bd.executor&quot;: &quot;Run&quot;,
+    &quot;Python.black_list_logic.executor&quot;: &quot;Run&quot;,
+    &quot;Python.bot.executor&quot;: &quot;Run&quot;,
+    &quot;Python.register.executor&quot;: &quot;Run&quot;,
+    &quot;Python.search.executor&quot;: &quot;Run&quot;,
+    &quot;Python.search.py.executor&quot;: &quot;Run&quot;,
+    &quot;Python.start bot.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/rm1238/temp&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "sqlite"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;sqlite&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/Telegram" />
@@ -103,7 +137,7 @@
       <command value="delete_line_user_temp(1041354811)" />
     </option>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.Bot">
     <configuration name="Bot" type="PythonConfigurationType" factoryName="Python">
       <module name="[Second]" />
       <option name="ENV_FILES" value="" />
@@ -182,7 +216,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-python-sdk-09665e90c3a7-b11f5e8da5ad-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-233.15026.15" />
+        <option value="bundled-js-predefined-1d06a55b98c1-91d5c284f522-JavaScript-PY-241.15989.155" />
+        <option value="bundled-python-sdk-babbdf50b680-7c6932dee5e4-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-241.15989.155" />
       </set>
     </attachedChunks>
   </component>
@@ -212,6 +247,12 @@
       <workItem from="1713015506603" duration="10000" />
       <workItem from="1713090019653" duration="18000" />
       <workItem from="1713096131231" duration="6942000" />
+      <workItem from="1715706056699" duration="608000" />
+      <workItem from="1715718756253" duration="2309000" />
+      <workItem from="1715802067245" duration="5000" />
+      <workItem from="1716030971518" duration="1467000" />
+      <workItem from="1716033518666" duration="6450000" />
+      <workItem from="1716109186803" duration="4970000" />
     </task>
     <task id="LOCAL-00001" summary="ROSTPC_0.0.16">
       <option name="closed" value="true" />
@@ -434,16 +475,16 @@
     <option name="LAST_COMMIT_MESSAGE" value="BLACK LIST 3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/_Second_$Bot.coverage" NAME="Bot Coverage Results" MODIFIED="1713111870360" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/Second$bd.coverage" NAME="bd Coverage Results" MODIFIED="1716040609118" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Telegram/bd_functions" />
+    <SUITE FILE_PATH="coverage/Second$bot.coverage" NAME="bot Coverage Results" MODIFIED="1716040820391" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Telegram" />
+    <SUITE FILE_PATH="coverage/Second$register.coverage" NAME="register Coverage Results" MODIFIED="1711630495285" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Telegram/bot_dialogs" />
     <SUITE FILE_PATH="coverage/_Second_$search.coverage" NAME="search Coverage Results" MODIFIED="1712615085429" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Telegram" />
-    <SUITE FILE_PATH="coverage/Second$start_bot.coverage" NAME="start bot Coverage Results" MODIFIED="1712008204463" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/Second$Bot.coverage" NAME="Bot Coverage Results" MODIFIED="1713187610627" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/_Second_$Bot.coverage" NAME="Bot Coverage Results" MODIFIED="1713111870360" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/Second$search_py.coverage" NAME="search.py Coverage Results" MODIFIED="1712594511533" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Telegram/outher_function" />
+    <SUITE FILE_PATH="coverage/Second$black_list_logic.coverage" NAME="black_list_logic Coverage Results" MODIFIED="1713187701681" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Telegram/logic" />
+    <SUITE FILE_PATH="coverage/Second$Bot.coverage" NAME="Bot Coverage Results" MODIFIED="1716116766513" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/Second$search.coverage" NAME="search Coverage Results" MODIFIED="1712599724782" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Telegram" />
     <SUITE FILE_PATH="coverage/Second$bd_connections.coverage" NAME="bd_connections Coverage Results" MODIFIED="1713120667072" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Telegram" />
-    <SUITE FILE_PATH="coverage/Second$search_py.coverage" NAME="search.py Coverage Results" MODIFIED="1712594511533" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Telegram/outher_function" />
-    <SUITE FILE_PATH="coverage/Second$bot.coverage" NAME="bot Coverage Results" MODIFIED="1711714912047" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Telegram" />
-    <SUITE FILE_PATH="coverage/Second$register.coverage" NAME="register Coverage Results" MODIFIED="1711630495285" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Telegram/bot_dialogs" />
-    <SUITE FILE_PATH="coverage/Second$bd.coverage" NAME="bd Coverage Results" MODIFIED="1712157149762" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Telegram" />
-    <SUITE FILE_PATH="coverage/Second$black_list_logic.coverage" NAME="black_list_logic Coverage Results" MODIFIED="1713187701681" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Telegram/logic" />
+    <SUITE FILE_PATH="coverage/Second$start_bot.coverage" NAME="start bot Coverage Results" MODIFIED="1712008204463" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
 </project>

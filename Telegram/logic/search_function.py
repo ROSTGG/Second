@@ -2,7 +2,6 @@ import sqlite3
 import time
 from dataclasses import dataclass
 
-from translate import Translator
 
 from Telegram.bot_dialogs.data import *
 @dataclass
@@ -107,5 +106,5 @@ def form(card):
     return data
 
 
-for i in search('An_electro-pediatrician', int(input('Enter TG id: '))):
-    print(i.info)
+# for i in search('An_electro-pediatrician', int(input('Enter TG id: '))):
+#     print(i.info)

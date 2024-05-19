@@ -50,7 +50,7 @@ from aiogram.types import (
 )
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from classes import *
-from data import *
+from old_data import *
 
 TOKEN = ("6752526100:AAFCSA3zE7LTV88AP68ozKPd90DxJ14Upks")
 TOKEN_REPORT = ("6862759280:AAHZjS4WURkLzk812ELzwUSQS6522x5FST4")

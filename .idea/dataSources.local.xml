@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="dataSourceStorageLocal" created-in="PY-241.14494.241">
+  <component name="dataSourceStorageLocal" created-in="PY-241.15989.155">
     <data-source name="second [2]" uuid="966396e0-6061-4ddf-a09f-3ebecf077332">
       <database-info product="SQLite" version="3.45.1" jdbc-version="4.2" driver-name="SQLite JDBC" driver-version="3.45.1.0" dbms="SQLITE" exact-version="3.45.1" exact-driver-version="3.45">
         <identifier-quote-string>&quot;</identifier-quote-string>
@@ -36,6 +36,11 @@
           <node kind="schema" qname="@" />
         </introspection-scope>
       </schema-mapping>
+    </data-source>
+    <data-source name="second" uuid="1ef880ce-603f-499d-86d1-6f7e079c28df">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="SQLITE" />
+      <auth-provider>no-auth</auth-provider>
+      <schema-mapping />
     </data-source>
   </component>
 </project>

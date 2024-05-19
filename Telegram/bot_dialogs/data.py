@@ -17,6 +17,7 @@ main_instrument_KEY = "main_instrument_KEY"
 choice_instrument_KEY = "choice_instrument_KEY"
 second_instrument_KEY = "second_instrument_KEY"
 FINISHED_KEY = "finished"
+city_KEY = "city_KEY"
 FINISHED_KEY_REGISTER = "finished_reg"
 choice_KEY = "choice_id"
 isFind_KEY = "isFind_id"
@@ -34,6 +35,7 @@ t_data_description = "t_data_description"
 t_data_link = "t_data_link"
 object_dialog_manager = None
 find_user_KEY = "find_user_KEY"
+LOCATION = "LOCATION"
 @dataclass
 class Istr:
     id: str

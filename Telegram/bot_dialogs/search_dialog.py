@@ -3,12 +3,12 @@ from aiogram_dialog.widgets.kbd import Button, Column, Select, NextPage, PrevPag
 
 from Telegram.bot import send_notification
 from Telegram.enter_bot_value import bot
-from Telegram.bd import Session, get_line_user
+from Telegram.bd_functions.bd import Session, get_line_user
 from Telegram.bot_dialogs.common import MAIN_MENU_BUTTON
 from Telegram.bot_dialogs.data import *
 from Telegram.bot_dialogs.getter import getter_profil
 from Telegram.bot_dialogs.states import Search_m
-from Telegram.db_user_info import get_line_userinfo
+from Telegram.bd_functions.db_user_info import get_line_userinfo
 # from Telegram.bd import create_row, get_line_user, update_line_user
 from Telegram.logic.search_function import search, Ibdstr
 from aiogram_dialog.widgets.text import Const, Format, List
