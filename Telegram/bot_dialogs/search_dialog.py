@@ -9,7 +9,6 @@ from Telegram.bot_dialogs.data import *
 from Telegram.bot_dialogs.getter import getter_profil
 from Telegram.bot_dialogs.states import Search_m
 from Telegram.bd_functions.db_user_info import get_line_userinfo
-# from Telegram.bd import create_row, get_line_user, update_line_user
 from Telegram.logic.search_function import search, Ibdstr
 from aiogram_dialog.widgets.text import Const, Format, List
 

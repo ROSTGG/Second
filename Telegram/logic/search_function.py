@@ -1,9 +1,5 @@
-import sqlite3
-import time
-from dataclasses import dataclass
-
-
 from Telegram.bot_dialogs.data import *
+
 @dataclass
 class Ibdstr:
     id: str

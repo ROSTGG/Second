@@ -10,10 +10,7 @@ from aiogram.types import ErrorEvent, Message, ReplyKeyboardRemove, CallbackQuer
 from aiogram_dialog import DialogManager, setup_dialogs, ShowMode, StartMode, Dialog, LaunchMode
 from aiogram_dialog.api.exceptions import UnknownIntent
 
-# from Telegram.bot_dialogs import search_dialog
 from Telegram.bot_dialogs.common import dialog_dont_work, send_notification
-from Telegram.bot_dialogs.data import isAlredyRegister, tg_id_user, Data_update_list, FINISHED_KEY, bot_main, \
-    bot_for_test, bot_notification
 from Telegram.bot_dialogs.edit_account import EditAccount_dialog
 from Telegram.bot_dialogs.help import dialog_help
 from Telegram.bot_dialogs.menu import menu

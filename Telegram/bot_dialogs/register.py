@@ -1,5 +1,3 @@
-import types
-
 import requests
 from aiogram import F, Bot
 from aiogram.enums import ContentType
@@ -13,7 +11,6 @@ from aiogram_dialog.widgets.text import Const, Format
 
 from Telegram.bd_functions.bd import create_row
 from Telegram.bd_functions.db_user_info import create_row_userinfo
-# from Telegram.bot import bot
 from Telegram.bot_dialogs.data import FINISHED_KEY, choice_KEY, genre_KEY, main_instrument_KEY, choice_instrument_KEY, \
     Instrument_KEY, Choice_group_KEY, isAlredyRegister, Data_update_list, tg_id_user, Istr, LOCATION, city_KEY
 from Telegram.bot_dialogs.getter import getter_profil

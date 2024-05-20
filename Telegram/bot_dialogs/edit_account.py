@@ -1,23 +1,18 @@
-# import types
-
 import requests
-from aiogram import F
 from aiogram.enums import ContentType
 from aiogram.types import CallbackQuery, Message
 from aiogram_dialog import Dialog, LaunchMode, Window, DialogManager
 from aiogram_dialog.widgets.input import TextInput, MessageInput
 from aiogram_dialog.widgets.kbd import Button, SwitchTo, Column, Select, Start, RequestLocation, Row
-from aiogram_dialog.widgets.markup.reply_keyboard import ReplyKeyboardFactory
+from aiogram_dialog.widgets.markup.reply_keyboard import ReplyKeyboardFactory, MarkupFactory
 from aiogram_dialog.widgets.text import Const, Format
 from aiogram import Bot, Dispatcher, types, Router, F
 
-# import data
 from Telegram.bot_dialogs.data import *
 from Telegram.bot_dialogs.getter import getter_profil
 from Telegram.bot_dialogs.states import EditAccount, Menu
 from Telegram.bd_functions.bd import create_row, get_line_user, update_line_user
 from Telegram.bd_functions.db_user_temp import create_row_temp, get_line_user_temp, update_line_user_temp, delete_line_user_temp
-
 
 def id_getter(istr: Istr) -> str:
     return istr.id
@@ -303,7 +298,7 @@ user_data = {}
 city_window = Window(
     Const("Отправьте вашу геолокацию с помощью кнопки ниже!"),
     RequestLocation(Const("📍 Send location")),
-    MessageInput(step_city, content_types=[ContentType.LOCATION]),
+    MessageInput(step_city, content_types=ContentType.LOCATION),
     # TextInput(id="city", on_success=step_city),
     CANCEL_EDIT,
     markup_factory=ReplyKeyboardFactory(
@@ -311,6 +306,9 @@ city_window = Window(
             resize_keyboard=True,),
     state=EditAccount.city,
 )
+
+
+
 genre_window = Window(
     Const("Выберите любимый жанр:"),
     Column(
