@@ -3,10 +3,6 @@ import sqlite3 as sql
 import requests
 from typing import Literal
 
-
-# hi
-# hi, i'm ROSTGG (Rostislav)
-
 class Session:
     def __init__(self, path: str):
         self.path = path
@@ -171,7 +167,6 @@ def isRegisterUser(TgId: int):
     else:
         return True
 
-
 def get_line_user(TgId: int):
     bd = sql.connect('Telegram/data/second.SQLite')
     cursor = bd.cursor()
@@ -203,7 +198,7 @@ def update_line_user(tg_id: int, name: str, city: str,
     cursor = bd.cursor()
 
     cursor.execute(
-        'UPDATE Clients SET name = ?, city = ?, genre = ?, main_inst = ?, choice_inst = ?, choice = ?, exp = ?, des = ?, link = ? WHERE tg_id = ?)',
+        'UPDATE Clients SET name = ?, city = ?, genre = ?, main_inst = ?, choice_inst = ?, choice = ?, exp = ?, des = ?, link = ? WHERE tg_id = ?',
         (name, city, genre, main_inst, choice_inst, choice, exp, des, link, tg_id))
     bd.commit()
     bd.close()

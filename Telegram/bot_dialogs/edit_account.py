@@ -1,18 +1,18 @@
 import requests
-from aiogram import F
+from aiogram.enums import ContentType
 from aiogram.types import CallbackQuery, Message
 from aiogram_dialog import Dialog, LaunchMode, Window, DialogManager
-from aiogram_dialog.widgets.input import TextInput
-from aiogram_dialog.widgets.kbd import Button, SwitchTo, Column, Select, Start
+from aiogram_dialog.widgets.input import TextInput, MessageInput
+from aiogram_dialog.widgets.kbd import Button, SwitchTo, Column, Select, Start, RequestLocation, Row
+from aiogram_dialog.widgets.markup.reply_keyboard import ReplyKeyboardFactory, MarkupFactory
 from aiogram_dialog.widgets.text import Const, Format
+from aiogram import Bot, Dispatcher, types, Router, F
 
-import data
 from Telegram.bot_dialogs.data import *
 from Telegram.bot_dialogs.getter import getter_profil
 from Telegram.bot_dialogs.states import EditAccount, Menu
-from Telegram.bd import create_row, get_line_user, update_line_user
+from Telegram.bd_functions.bd import create_row, get_line_user, update_line_user
 from Telegram.bd_functions.db_user_temp import create_row_temp, get_line_user_temp, update_line_user_temp, delete_line_user_temp
-
 
 def id_getter(istr: Istr) -> str:
     return istr.id
@@ -68,17 +68,26 @@ async def step_name(callback: CallbackQuery, widget, dialog_manager: DialogManag
         await callback.answer("Введите имя по короче меньше 30 сиволов включая побелы")
         await dialog_manager.switch_to(EditAccount.name)
 
-async def step_city(callback: CallbackQuery, widget, dialog_manager: DialogManager,item_id: str, *_):
+async def step_city(message: types.Message, dialog: Dialog, manager: DialogManager):
     # dialog_manager.dialog_data[t_data_city] = item_id
+    if message.content_type == ContentType.LOCATION:
+        location = message.location
+        # user_data[message.from_user.id][LOCATION] = (location.latitude, location.longitude)
+        # await message.answer(f"Вы отправили геопозицию:\nШирота: {location.latitude}\nДолгота: {location.longitude}")
+        data = get_line_user_temp(manager.event.from_user.id)
+        update_line_user_temp(manager.event.from_user.id, data[2], f"{location.latitude};{location.longitude}", data[4], data[5], data[6], data[7],
+                                  data[8], data[9], data[10])
+        # await manager.done()
+        await manager.switch_to(EditAccount.preview)
 
-    if len(item_id) <= 100:
-        data = get_line_user_temp(dialog_manager.event.from_user.id)
-        update_line_user_temp(dialog_manager.event.from_user.id, data[2], item_id, data[4], data[5], data[6], data[7],
-                              data[8], data[9], data[10])
-        await dialog_manager.switch_to(EditAccount.preview)
-    else:
-        await callback.answer("Введите город по короче меньше 100 сиволов включая побелы")
-        await dialog_manager.switch_to(EditAccount.name)
+    # if len(item_id) <= 100:
+    #     data = get_line_user_temp(dialog_manager.event.from_user.id)
+    #     update_line_user_temp(dialog_manager.event.from_user.id, data[2], item_id, data[4], data[5], data[6], data[7],
+    #                           data[8], data[9], data[10])
+    #     await dialog_manager.switch_to(EditAccount.preview)
+    # else:
+    #     await callback.answer("Введите город по короче меньше 100 сиволов включая побелы")
+    #     await dialog_manager.switch_to(EditAccount.name)
 async def step_genre(callback: CallbackQuery, widget, dialog_manager: DialogManager, item_id: str, *_):
     # dialog_manager.dialog_data[t_data_genre] = item_id
     data = get_line_user_temp(dialog_manager.event.from_user.id)
@@ -278,12 +287,28 @@ name_window = Window(
     CANCEL_EDIT,
     state=EditAccount.name,
 )
+
+user_data = {}
+# async def get_location(message: types.Message, dialog: Dialog, manager: DialogManager):
+#     if message.content_type == ContentType.LOCATION:
+#         location = message.location
+#         user_data[message.from_user.id] = (location.latitude, location.longitude)
+#         await message.answer(f"Вы отправили геопозицию:\nШирота: {location.latitude}\nДолгота: {location.longitude}")
+#         await manager.done()
 city_window = Window(
-    Const("Введите ваш город(город в котором вы проживаете):"),
-    TextInput(id="city", on_success=step_city),
+    Const("Отправьте вашу геолокацию с помощью кнопки ниже!"),
+    RequestLocation(Const("📍 Send location")),
+    MessageInput(step_city, content_types=ContentType.LOCATION),
+    # TextInput(id="city", on_success=step_city),
     CANCEL_EDIT,
+    markup_factory=ReplyKeyboardFactory(
+            input_field_placeholder=Format("{event.from_user.username}"),
+            resize_keyboard=True,),
     state=EditAccount.city,
 )
+
+
+
 genre_window = Window(
     Const("Выберите любимый жанр:"),
     Column(

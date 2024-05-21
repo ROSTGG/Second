@@ -6,7 +6,7 @@ from typing import Literal
 
 # hi
 # hi, i'm ROSTGG (Rostislav)
-def create_row_userinfo(tg_id: int, user_name: str, id_band: int, black_list: list):
+def create_row_userinfo(tg_id: int, user_name: str, black_list: list):
     bd = sql.connect("Telegram/data/second_user_info.SQLite")
 
     cursor = bd.cursor()
@@ -20,12 +20,11 @@ CREATE TABLE IF NOT EXISTS Clients (
 id INTEGER PRIMARY KEY,
 tg_id INTEGER NOT NULL,
 user_name TEXT NOT NULL,
-id_band INTEGER NOT NULL,
 black_list TEXT NOT NULL)''')
 
     bd.commit()
 
-    cursor.execute('INSERT INTO Clients (tg_id, user_name, id_band, black_list) VALUES (?, ?, ?, ?)',(tg_id, user_name, id_band, black_list))
+    cursor.execute('INSERT INTO Clients (tg_id, user_name, black_list) VALUES (?, ?, ?)',(tg_id, user_name,black_list))
 
     bd.close()
 
@@ -60,12 +59,16 @@ def get_line_userinfo(TgId: int):
     return data[0]
 
 
-def update_line_userinfo(tg_id: int, user_name: str, id_band, black_list: list):
+def update_line_userinfo(tg_id: int, user_name: str, black_list: list):
     bd = sql.connect('Telegram/data/second_user_info.SQLite')
+    try:
+        black_list = '.'.join(black_list)
+    except:
+        black_list = 'NOT'
     cursor = bd.cursor()
     cursor.execute(
-        'UPDATE Clients SET user_name = ?,  id_band = ?, black_list = ?  WHERE tg_id = ?',
-        (user_name, id_band, black_list, tg_id))
+        'UPDATE Clients SET user_name = ?,  black_list = ?  WHERE tg_id = ?',
+        (user_name, black_list, tg_id))
     bd.commit()
     bd.close()
 def delete_line_userinfo(tg_id: int):

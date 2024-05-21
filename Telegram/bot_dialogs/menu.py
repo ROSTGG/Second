@@ -6,11 +6,9 @@ from aiogram_dialog.widgets.kbd import Button, Row, Start, Url
 from aiogram_dialog.widgets.text import Const
 
 from Telegram.bot_dialogs import states
-from Telegram.bot_dialogs.data import tg_id_user
 from Telegram.bot_dialogs.edit_account import step_go_edit_akkount
-from Telegram.bot_dialogs.states import Menu, My_profile, Movement_musicians, \
-    Search_m, Event, My_Group, Project, Help, DontWorked
-from Telegram.bot_dialogs.all import Register
+from Telegram.bot_dialogs.states import Menu, Search_m, Help, DontWorked
+
 FRUITS_KEY = "fruits"
 OTHER_KEY = "others"
 @dataclass
@@ -72,9 +70,9 @@ menu = Dialog(
                 Button(Const("Мой аккаунт"),
                 id="my_akkount",
                 on_click=step_go_edit_akkount),
-                Button(Const("Моя группа"),
-                id="my_group",
-                on_click=my_group),
+                # Button(Const("Моя группа"),
+                # id="my_group",
+                # on_click=my_group),
                 Button(Const("Поиск"),
                 id="search_m",
                 on_click=search_m),),

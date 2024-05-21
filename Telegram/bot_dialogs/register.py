@@ -1,19 +1,20 @@
 import requests
 from aiogram import F, Bot
+from aiogram.enums import ContentType
 from aiogram.exceptions import TelegramBadRequest
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery, Message
 from aiogram_dialog import Dialog, LaunchMode, Window, DialogManager, StartMode
-from aiogram_dialog.widgets.input import TextInput
-from aiogram_dialog.widgets.kbd import Button, SwitchTo, Column, Select, Url
+from aiogram_dialog.widgets.input import TextInput, MessageInput
+from aiogram_dialog.widgets.kbd import Button, SwitchTo, Column, Select, Url, RequestLocation
+from aiogram_dialog.widgets.markup.reply_keyboard import ReplyKeyboardFactory
 from aiogram_dialog.widgets.text import Const, Format
 
-# from Telegram.bot import bot
+from Telegram.bd_functions.bd import create_row
+from Telegram.bd_functions.db_user_info import create_row_userinfo
 from Telegram.bot_dialogs.data import FINISHED_KEY, choice_KEY, genre_KEY, main_instrument_KEY, choice_instrument_KEY, \
-    Instrument_KEY, Choice_group_KEY, isAlredyRegister, Data_update_list, tg_id_user, Istr
+    Instrument_KEY, Choice_group_KEY, isAlredyRegister, Data_update_list, tg_id_user, Istr, LOCATION, city_KEY
 from Telegram.bot_dialogs.getter import getter_profil
 from Telegram.bot_dialogs.states import Register, Menu
-from Telegram.bd import create_row
-from Telegram.db_user_info import create_row_userinfo
 
 bot = Bot(token="6752526100:AAFCSA3zE7LTV88AP68ozKPd90DxJ14Upks")
 
@@ -56,7 +57,7 @@ async def get_call_data(dialog_manager: DialogManager, **kwargs):
 async def step_name(callback: CallbackQuery, widget, dialog_manager: DialogManager,item_id: str, *_):
     # dialog_manager.dialog_data[choice_KEY] = item_id
     if len(item_id) <= 30:
-        create_row_userinfo(dialog_manager.event.from_user.id, dialog_manager.event.from_user.username)
+        create_row_userinfo(dialog_manager.event.from_user.id, dialog_manager.event.from_user.username,  [])
         try:
             dialog_manager.dialog_data[Data_update_list][1] = item_id
         except Exception as e:
@@ -74,15 +75,30 @@ async def step_name(callback: CallbackQuery, widget, dialog_manager: DialogManag
         await callback.answer("Введите имя по короче меньше 30 сиволов включая побелы")
         await dialog_manager.switch_to(Register.name)
 
-async def step_city(callback: CallbackQuery, widget, dialog_manager: DialogManager,item_id: str, *_):
-    if len(item_id) <= 60:
-        if dialog_manager.dialog_data[FINISHED_KEY]:
-            await dialog_manager.switch_to(Register.preview)
+async def step_city(message: Message, dialog: Dialog, manager: DialogManager, *_):
+    if message.content_type == ContentType.LOCATION:
+        # location = message.location
+        # user_data[message.from_user.id][LOCATION] = (location.latitude, location.longitude)
+        # await message.answer(f"Вы отправили геопозицию:\nШирота: {location.latitude}\nДолгота: {location.longitude}")
+        # data = get_line_user_temp(manager.event.from_user.id)
+        # update_line_user_temp(manager.event.from_user.id, data[2], f"{location.latitude};{location.longitude}", data[4], data[5], data[6], data[7],
+        #                           data[8], data[9], data[10])
+        manager.dialog_data[city_KEY] = f"{message.location.latitude};{message.location.longitude}"
+        # await manager.done()
+        if manager.dialog_data[FINISHED_KEY]:
+            await manager.switch_to(Register.preview)
         else:
-            await dialog_manager.switch_to(Register.genre)
-    else:
-        await callback.answer("Введите город по короче меньше 60 сиволов включая побелы")
-        await dialog_manager.switch_to(Register.city)
+            await manager.switch_to(Register.genre)
+
+
+    # if len(item_id) <= 60:
+    #     if dialog_manager.dialog_data[FINISHED_KEY]:
+    #         await dialog_manager.switch_to(Register.preview)
+    #     else:
+    #         await dialog_manager.switch_to(Register.genre)
+    # else:
+    #     await callback.answer("Введите город по короче меньше 60 сиволов включая побелы")
+    #     await dialog_manager.switch_to(Register.city)
 async def step_genre(event, widget, dialog_manager: DialogManager, item_id: str, *_):
     dialog_manager.dialog_data[genre_KEY] = item_id
     if dialog_manager.dialog_data[FINISHED_KEY]:
@@ -154,20 +170,13 @@ async def step_link(callback: CallbackQuery, widget, dialog_manager: DialogManag
         await callback.answer("НЕ КОРЕКТНАЯ ССЫЛКА пример:https://github.com/ROSTGG")
         await dialog_manager.switch_to(Register.link)
 
-    # await next_or_end(event, widget, dialog_manager, *_)
-# async def finaly_link(event, widget, dialog_manager: DialogManager, item_id: str, *_):
-#     dialog_manager.dialog_data[FINISHED_KEY] = True
-#     await dialog_manager.switch_to(Wizard.preview)
-    # await next_or_end(event, widget, dialog_manager, *_)
-# async def step_Ffind(event, widget, dialog_manager: DialogManager,item_id: str, *_):
-#     dialog_manager.dialog_data["Ffind_id"] = item_id
-#     await next_or_end(event, widget, dialog_manager, *_)
 
 async def result_getter(dialog_manager: DialogManager, **kwargs):
     dialog_manager.dialog_data[FINISHED_KEY] = True
-    genre, first_instrument, choice_instrument, choice = None, None, None, None
+    genre, first_instrument, choice_instrument, choice, city = None, None, None, None, None
     try:
         genre = dialog_manager.dialog_data[genre_KEY]
+        city = dialog_manager.dialog_data[city_KEY]
         first_instrument = dialog_manager.dialog_data[main_instrument_KEY]
         choice_instrument = dialog_manager.dialog_data[choice_instrument_KEY]
         choice = dialog_manager.dialog_data[choice_KEY]
@@ -187,9 +196,10 @@ async def result_getter(dialog_manager: DialogManager, **kwargs):
         if i.id == choice:
             choice = i.name
 
+    # dialog_manager.find("city").get_value()
     return {
         "name": dialog_manager.find("name").get_value(),
-        "city": dialog_manager.find("city").get_value(),
+        "city": city,
         "genre": genre,
         "first_instrument": first_instrument,
         "choice_instrument": choice_instrument,
@@ -215,54 +225,10 @@ async def clear_chat(callback: CallbackQuery, dialog_manager: DialogManager):
         else:
             print(ex.message)
 async def register_user(callback: CallbackQuery, widj, dialog_manager: DialogManager, **kwargs):
-    # find_text = str(dialog_manager.find("find").get_checked()).replace("]", "").replace("'", "").replace("[", "")
-    # if dialog_manager.dialog_data[isFind_KEY] == "yes":
-    #     TisFind = True
-    # else:
-    #     TisFind = False
-    # if dialog_manager.dialog_data[choice_KEY] == "person":
-    #     choice = 1301150
-    # else:
-    #     choice = 1301151
-    # await callback.answer("Регистрация начилась")
-    # r = new_str(tg_id=str(callback.from_user.id),
-    #         name=dialog_manager.find("name").get_value(),
-    #         city=dialog_manager.find("city").get_value(),
-    #         find=find_text,
-    #         isFind=TisFind,
-    #         status=choice,
-    #         description=dialog_manager.find("description").get_value(),
-    #         link=dialog_manager.find("link").get_value(),)
-    # print("Exit code from data base"+str(r))
-    # await dialog_manager.start(Menu_st.menu_s, mode=StartMode.NEW_STACK)
-    # if dialog_manager.dialog_data[choice_KEY] == "person":
-    #     choice = "Музыкант 🎶"
-    # else:
-    #     choice = "Группа 🧾"
-    # if dialog_manager.dialog_data[isFind_KEY] == "yes":
-    #     TisFind = "Вы пытетесь найти группу"
-    # else:
-    #     TisFind = "Вы НЕ пытетесь найти группу"
-    # first_instrument = str(dialog_manager.find("first_instrument").get_value()).replace("]", "").replace("'", "").replace("[", "")
-    # choice_instrument = str(dialog_manager.find("choice_instrument").get_value()).replace("]", "").replace("'", "").replace("[", "")
-    # if dialog_manager.dialog_data[isFind_KEY] == "piano":
-    #     TFind = "Пианино"
-    # elif dialog_manager.dialog_data[isFind_KEY] == "guitar":
-    #     TFind = "Гитара"
-    # elif dialog_manager.dialog_data[isFind_KEY] == "bass_guitar":
-    #     TFind = "Басс гитара"
-    # else:
-    #     TFind = "Флейта"
-    # data = await getter_profil()
-    # for i in data[Instrument_KEY]:
-    #     if data[Instrument_KEY][i].id == main_instrument:
-    #         main_instrument = data[Instrument_KEY][i].name
-    # for i in data[Instrument_KEY]:
-    #     if data[Instrument_KEY][i].id == choice_instrument:
-    #         choice_instrument = data[Instrument_KEY][i].name
-    genre, main_instrument, choice_instrument, choice = None, None, None, None
+    genre, main_instrument, choice_instrument, choice, city = None, None, None, None, None
     try:
         genre = dialog_manager.dialog_data[genre_KEY]
+        city = dialog_manager.dialog_data[city_KEY]
         main_instrument = dialog_manager.dialog_data[main_instrument_KEY]
         choice_instrument = dialog_manager.dialog_data[choice_instrument_KEY]
         choice = dialog_manager.dialog_data[choice_KEY]
@@ -271,7 +237,7 @@ async def register_user(callback: CallbackQuery, widj, dialog_manager: DialogMan
 
     print("TG_ID: " + str(callback.from_user.id))
     print(f"name: {dialog_manager.find('name').get_value()}\n",
-        f"city: {dialog_manager.find('city').get_value()}\n",
+        f"city: {city}\n",
         f"genre: {genre}\n",
         f"first_instrument: {main_instrument}\n",
         f"choice_instrument: {choice_instrument}\n",
@@ -281,7 +247,7 @@ async def register_user(callback: CallbackQuery, widj, dialog_manager: DialogMan
         f"link: {dialog_manager.find('link').get_value()}\n")
     data = create_row(tg_id=callback.from_user.id,
                name=dialog_manager.find('name').get_value(),
-               city=dialog_manager.find('city').get_value(),
+               city=city,
                genre = genre,
                main_inst = main_instrument,
                choice_inst = choice_instrument,
@@ -297,7 +263,7 @@ async def register_user(callback: CallbackQuery, widj, dialog_manager: DialogMan
 info_bot_window = Window(
     Const("Пожалуйста, запустите бота @notif_second_bot для уведомлений, туда вам будут высылать второстепенную информацию что-бы не засорять основной бот"),
     Url(Const("БОТ"), Const("https://t.me/notif_second_bot")),
-    SwitchTo(text=Const("Я запустил(а) бота, начать дегистрацию"), id="to_next_name_from_info", state=Register.name),
+    SwitchTo(text=Const("Я запустил(а) бота, продожить регистрацию"), id="to_next_name_from_info", state=Register.name),
     CANCEL_EDIT,
     state=Register.notif_bot,
 )
@@ -309,9 +275,14 @@ name_window = Window(
     state=Register.name,
 )
 city_window = Window(
-    Const("Введите ваш город(город в котором вы проживаете):"),
-    TextInput(id="city", on_success=step_city),
+    Const("Отправьте вашу геолокацию с помощью кнопки ниже!"),
+    RequestLocation(Const("📍 Send location")),
+    MessageInput(step_city, content_types=[ContentType.LOCATION]),
+    # TextInput(id="city", on_success=step_city),
     CANCEL_EDIT,
+    markup_factory=ReplyKeyboardFactory(
+            input_field_placeholder=Format("{event.from_user.username}"),
+            resize_keyboard=True,),
     state=Register.city,
 )
 genre_window = Window(
@@ -368,23 +339,6 @@ choice_instrument_window = Window(
     getter=getter_profil,
     preview_data=getter_profil,
 )
-# choice_isFind_window = Window(
-#     Const("Выберите :"),
-#     Select(
-#         text=Format("{item.emoji} {item.name} ("),
-#         id=isFind_KEY,
-#         items=isFind_KEY,
-#         # Alternatives:
-#         # items=lambda d: d[OTHER_KEY][FRUITS_KEY],  # noqa: E800
-#         # items=F[OTHER_KEY][FRUITS_KEY],  # noqa: E800
-#         item_id_getter=id_getter,
-#         on_click=step_isFind,
-#     ),
-#     CANCEL_EDIT,
-#     state=Wizard.isFind,
-#     getter=getter,
-#     preview_data=getter,
-# )
 
 choice_window = Window(
 Const("Вы состоите в группе?"),

@@ -10,18 +10,15 @@ from aiogram.types import ErrorEvent, Message, ReplyKeyboardRemove, CallbackQuer
 from aiogram_dialog import DialogManager, setup_dialogs, ShowMode, StartMode, Dialog, LaunchMode
 from aiogram_dialog.api.exceptions import UnknownIntent
 
-# from Telegram.bot_dialogs import search_dialog
 from Telegram.bot_dialogs.common import dialog_dont_work, send_notification
-from Telegram.bot_dialogs.data import isAlredyRegister, tg_id_user, Data_update_list, FINISHED_KEY, bot_main, \
-    bot_for_test, bot_notification
 from Telegram.bot_dialogs.edit_account import EditAccount_dialog
 from Telegram.bot_dialogs.help import dialog_help
 from Telegram.bot_dialogs.menu import menu
 from Telegram.bot_dialogs.search_dialog import window_one, window_view
 from Telegram.bot_dialogs.states import Menu, Register
 from Telegram.bot_dialogs.register import gregister_dialog_228
-from Telegram.bd import isRegisterUser, get_line_user
-from Telegram.db_user_info import update_line_userinfo
+from Telegram.bd_functions.bd import isRegisterUser, get_line_user
+from Telegram.bd_functions.db_user_info import update_line_userinfo
 from Telegram.enter_bot_value import bot
 
 
@@ -49,12 +46,13 @@ async def start(callback: CallbackQuery, dialog_manager: DialogManager):
         # if request_
         if isRegisterUser(callback.from_user.id):
             await clear_chat(callback, dialog_manager)
-            update_line_userinfo(dialog_manager.event.from_user.id, dialog_manager.event.from_user.username)
+            update_line_userinfo(tg_id=dialog_manager.event.from_user.id, user_name=dialog_manager.event.from_user.username, black_list=[0])
             await dialog_manager.start(Menu.MAIN, mode=StartMode.RESET_STACK)
         else:
             await clear_chat(callback, dialog_manager)
             await dialog_manager.start(Register.notif_bot, mode=StartMode.RESET_STACK)
-    except:
+    except Exception as e:
+        print(e)
         await clear_chat(callback, dialog_manager)
         await dialog_manager.start(Register.notif_bot, mode=StartMode.RESET_STACK)
 

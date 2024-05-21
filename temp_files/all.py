@@ -1,24 +1,24 @@
-import asyncio
-import logging
-import os
-from dataclasses import dataclass
-
-from aiogram import Bot, Dispatcher, F, Router
-from aiogram.filters import CommandStart
-from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import State, StatesGroup
-from aiogram.fsm.storage.memory import MemoryStorage
-from aiogram.types import Message, User, CallbackQuery
-
-from aiogram_dialog import (
-    Dialog, DialogManager, setup_dialogs, StartMode, Window, LaunchMode,
-)
-from aiogram_dialog.widgets.input import TextInput
-from aiogram_dialog.widgets.kbd import Checkbox, Next, SwitchTo, Radio, Button, Multiselect, Row, Column, Select
-from aiogram_dialog.widgets.text import Const, Jinja, Format, Case
-
-from Telegram.bot_dialogs.states import Register
-from baserow import new_str
+# import asyncio
+# import logging
+# import os
+# from dataclasses import dataclass
+#
+# from aiogram import Bot, Dispatcher, F, Router
+# from aiogram.filters import CommandStart
+# from aiogram.fsm.context import FSMContext
+# from aiogram.fsm.state import State, StatesGroup
+# from aiogram.fsm.storage.memory import MemoryStorage
+# from aiogram.types import Message, User, CallbackQuery
+#
+# from aiogram_dialog import (
+#     Dialog, DialogManager, setup_dialogs, StartMode, Window, LaunchMode,
+# )
+# from aiogram_dialog.widgets.input import TextInput
+# from aiogram_dialog.widgets.kbd import Checkbox, Next, SwitchTo, Radio, Button, Multiselect, Row, Column, Select
+# from aiogram_dialog.widgets.text import Const, Jinja, Format, Case
+#
+# from Telegram.bot_dialogs.states import Register
+# from baserow import new_str
 #stasloh
 # class Wizard(StatesGroup):
 #     title = State()

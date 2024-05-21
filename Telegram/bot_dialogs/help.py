@@ -1,19 +1,14 @@
-import shelve
-
-import requests
-from aiogram import F
 from aiogram_dialog import Dialog, LaunchMode, Window, DialogManager
 from aiogram_dialog.widgets.kbd import Column, Select, Start, NumberedPager
 from aiogram_dialog.widgets.text import Const, Format, ScrollingText
 
 from Telegram.bot_dialogs.common import MAIN_MENU_BUTTON
-from Telegram.bot_dialogs.data import *
 from Telegram.bot_dialogs.states import EditAccount, Help
 
 VERY_LONG_TEXT = """\
 Тут будет справка)
 
-По вопросам и предложениям по улучшению бота @RM1238g @stassmol
+По вопросам, предложениям,  @RM1238g @stassmol
 """
 
 window_one = Window(

@@ -2,8 +2,6 @@ from dataclasses import dataclass
 
 from aiogram import Bot
 
-# from Telegram.bot_dialogs.getter import Istr
-
 bot_main = Bot(token="6752526100:AAFCSA3zE7LTV88AP68ozKPd90DxJ14Upks")
 bot_for_test = Bot(token="6952795171:AAEKXFIDlF8v0zdnKtWCSJrqnj9J26h9LMw")
 bot_notification = Bot(token="7161720298:AAGJ9vqbd1upE9gerv-HHbas66woDOP_ExY")
@@ -17,6 +15,7 @@ main_instrument_KEY = "main_instrument_KEY"
 choice_instrument_KEY = "choice_instrument_KEY"
 second_instrument_KEY = "second_instrument_KEY"
 FINISHED_KEY = "finished"
+city_KEY = "city_KEY"
 FINISHED_KEY_REGISTER = "finished_reg"
 choice_KEY = "choice_id"
 isFind_KEY = "isFind_id"
@@ -34,6 +33,7 @@ t_data_description = "t_data_description"
 t_data_link = "t_data_link"
 object_dialog_manager = None
 find_user_KEY = "find_user_KEY"
+LOCATION = "LOCATION"
 @dataclass
 class Istr:
     id: str
