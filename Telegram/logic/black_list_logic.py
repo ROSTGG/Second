@@ -1,3 +1,5 @@
+from typing import List
+
 import Telegram.bd_functions.db_user_info as bui
 
 def add_users(tg_id, tg_id_persons: list):
@@ -33,9 +35,20 @@ def is_check_user_BL(tg_id: int, tg_id_person: int):
             return True
     except:
         return True
+def get_black_list(tg_id: int) -> List:
+    return str(bui.get_line_userinfo(tg_id)[3]).split('.')
+def is_username_in_list(username: str) -> bool:
+    try:
+        data = bui.get_line_userinfo_username(username)[2]
+        return True
+    except Exception as e:
+        print("error from 'is_username_in_list': "+str(e))
+        return False
+def get_tgid(username: str):
+    data = bui.get_line_userinfo_username(username)[1]
+    return data
 
-
-bui.create_row_userinfo(1783918240, '@rm1238g', 1, '132453415.12341234')
-print(bui.get_line_userinfo(1783918240))
-add_users(1783918240, [13451345, '12351324511', 21342134])
-print(bui.get_line_userinfo(1783918240))
+# bui.create_row_userinfo(1783918240, '@rm1238g', 1, '132453415.12341234')
+# print(bui.get_line_userinfo(1783918240))
+# add_users(1783918240, [13451345, '12351324511', 21342134])
+# print(bui.get_line_userinfo(1783918240))

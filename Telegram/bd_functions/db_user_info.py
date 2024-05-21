@@ -57,6 +57,13 @@ def get_line_userinfo(TgId: int):
     data = cursor.fetchall()
     bd.close()
     return data[0]
+def get_line_userinfo_username(username: str):
+    bd = sql.connect('Telegram/data/second_user_info.SQLite')
+    cursor = bd.cursor()
+    cursor.execute('SELECT * FROM Clients WHERE user_name = ?', (username,))
+    data = cursor.fetchall()
+    bd.close()
+    return data[0]
 
 
 def update_line_userinfo(tg_id: int, user_name: str, black_list: list):

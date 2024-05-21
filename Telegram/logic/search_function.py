@@ -1,14 +1,5 @@
-import sqlite3
-import time
-from dataclasses import dataclass
-
-from translate import Translator
-
-
-
 from Telegram.bot_dialogs.data import *
-
-
+from Telegram.logic.black_list_logic import is_check_user_BL
 
 
 @dataclass
@@ -52,8 +43,10 @@ def search(instrument: str, tg_id: int) -> list:
 
     points = [3 + geoPoints(ox, oy, float(data[i][4].split(';')[0]), float(data[i][4].split(';')[1])) for i in range(len(data))]
 
-
-
+    for i in range(len(data)):
+        if not is_check_user_BL(data[i][3], tg_id):
+            data.pop(i)
+            points.pop(i)
     count = 0
 
     points += [2 for _ in range(count)]
@@ -113,6 +106,6 @@ def form(card):
 
 
 
-for i in search('An_electro-pediatrician', int(input('Enter TG id: '))):
-    print(i.info)
+# for i in search('An_electro-pediatrician', int(input('Enter TG id: '))):
+#     print(i.info)
 

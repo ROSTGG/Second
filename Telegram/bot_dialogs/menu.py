@@ -7,7 +7,7 @@ from aiogram_dialog.widgets.text import Const
 
 from Telegram.bot_dialogs import states
 from Telegram.bot_dialogs.edit_account import step_go_edit_akkount
-from Telegram.bot_dialogs.states import Menu, Search_m, Help, DontWorked
+from Telegram.bot_dialogs.states import Menu, Search_m, Help, DontWorked, Settings
 
 FRUITS_KEY = "fruits"
 OTHER_KEY = "others"
@@ -52,8 +52,10 @@ async def event(event_from_user: CallbackQuery, widj, dialog_manager: DialogMana
 async def project(event_from_user: CallbackQuery, widj, dialog_manager: DialogManager, **kwargs):
     await dialog_manager.start(DontWorked.MAIN)
     # await dialog_manager.start(Project.MAIN)
-async def help(event_from_user: CallbackQuery, widj, dialog_manager: DialogManager, **kwargs):
-    await dialog_manager.start(Help.MAIN)
+
+    # await dialog_manager.start(Help.MAIN)
+async def settins(event_from_user: CallbackQuery, widj, dialog_manager: DialogManager, **kwargs):
+    await dialog_manager.start(Settings.MAIN)
     # await dialog_manager.start(Help.MAIN)
 
 
@@ -77,16 +79,15 @@ menu = Dialog(
                 id="search_m",
                 on_click=search_m),),
         Row(
-                Button(Const("События"),
-                id="event",
-                on_click=event),
-                Button(Const("Проекты"),
-                id="project",
-                on_click=project),
-
-                Button(Const("Справка"),
-                id="help",
-                on_click=help),),
+                # Button(Const("События"),
+                # id="event",
+                # on_click=event),
+                # Button(Const("Проекты"),
+                # id="project",
+                # on_click=project),
+                Button(Const("Настройки"),
+                id="settings",
+                on_click=settins),),
         Row(
                 Url(Const("Движение музыкантов"),
                     Const('t.me/musicwgo'))),

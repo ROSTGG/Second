@@ -61,6 +61,9 @@ class Project(StatesGroup):
     MAIN = State()
 class Help(StatesGroup):
     MAIN = State()
+class Settings(StatesGroup):
+    MAIN = State()
+    Enter = State()
 class Movement_musicians(StatesGroup):
     MAIN = State()
 class DontWorked(StatesGroup):
