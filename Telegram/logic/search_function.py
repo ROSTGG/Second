@@ -1,4 +1,15 @@
+import sqlite3
+import time
+from dataclasses import dataclass
+
+from translate import Translator
+
+
+
 from Telegram.bot_dialogs.data import *
+
+
+
 
 @dataclass
 class Ibdstr:
@@ -6,6 +17,10 @@ class Ibdstr:
     info: str
     info_but: str
 import sqlite3
+
+def geoPoints(x, y, x1, y1):
+    return -(abs(x - x1) + abs(y - y1)) * 2
+
 
 def search(instrument: str, tg_id: int) -> list:
 
@@ -17,48 +32,42 @@ def search(instrument: str, tg_id: int) -> list:
     cur.execute("SELECT city, genre FROM Clients WHERE tg_id = ?", (tg_id,))
     data = cur.fetchall()[0]
     city, genre = data[0], data[1]
+    coord = city.split(';')
+    ox, oy = float(coord[0]), float(coord[1])
 
     #Get Nearby City
     # cur.execute("SELECT nearby_cities FROM Cities WHERE city = ?", (city,))
     # nearby_cities = cur.fetchall()[0]
-    nearby_cities = ['Москва', 'Игумново']
 
 
 
     #Search DATA By City
     data = []
-    cur.execute("SELECT main_inst, choice_inst, genre, tg_id FROM Clients WHERE city = ? and tg_id != ?", (city, tg_id, ))
+    cur.execute("SELECT main_inst, choice_inst, genre, tg_id, city FROM Clients WHERE tg_id != ?", (tg_id, ))
     try:
         for i in cur.fetchall():
             data.append(i)
     except:
         return False
 
-    points = [3 for _ in range(len(data))]
+    points = [3 + geoPoints(ox, oy, float(data[i][4].split(';')[0]), float(data[i][4].split(';')[1])) for i in range(len(data))]
+
+
 
     count = 0
-
-    for n_city in nearby_cities:
-        cur.execute("SELECT main_inst, choice_inst, genre, tg_id FROM Clients WHERE city = ?", (n_city,))
-        try:
-            data.append(cur.fetchall()[0])
-            count += 1
-        except:
-            pass
 
     points += [2 for _ in range(count)]
 
 
 
-
     for i in data:
         if i[0] == instrument:
-            points[data.index(i)] += 2
+            points[data.index(i)] += 4
         elif i[1] == instrument:
-            points[data.index(i)] += 1
+            points[data.index(i)] += 2
 
         if i[2] == genre:
-            points[data.index(i)] += 1
+            points[data.index(i)] += 3
 
     for i in range(len(data) - 1):
         for j in range(len(data) - 1 - i):
@@ -102,5 +111,8 @@ def form(card):
     return data
 
 
-# for i in search('An_electro-pediatrician', int(input('Enter TG id: '))):
-#     print(i.info)
+
+
+for i in search('An_electro-pediatrician', int(input('Enter TG id: '))):
+    print(i.info)
+
