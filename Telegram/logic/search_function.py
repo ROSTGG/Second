@@ -10,7 +10,7 @@ import sqlite3
 def search(instrument: str, tg_id: int) -> list:
 
     #Connection
-    conn = sqlite3.connect('../data/second.SQLite')
+    conn = sqlite3.connect('Telegram/data/second.SQLite')
     cur = conn.cursor()
 
     #Get City

@@ -54,7 +54,7 @@ async def step_set_instrument(event, widget, dialog_manager: DialogManager, item
 
 session = Session('Telegram/data')
 async def getter_one(dialog_manager: DialogManager, **kwargs):
-    data = search(temp_instrument[dialog_manager.event.from_user.id], dialog_manager.event.from_user.id,session)
+    data = search(temp_instrument[dialog_manager.event.from_user.id], dialog_manager.event.from_user.id)
     temp = []
     for i in data:
         temp.append(i.id)

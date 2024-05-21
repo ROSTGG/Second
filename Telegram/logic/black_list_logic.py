@@ -23,7 +23,7 @@ def delete_users(tg_id, tg_id_persons):
         except:
             pass
     return True
-def is_check_user_BL(tg_id, tg_id_person):
+def is_check_user_BL(tg_id: int, tg_id_person: int):
     data = bui.get_line_userinfo(tg_id)
     try:
         black_list = str(data[3]).split('.')
