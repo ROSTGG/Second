@@ -9,11 +9,9 @@ from Telegram.enter_bot_value import bot
 from Telegram.logic.black_list_logic import is_check_user_BL
 
 
-async def send_notification(is_another_user: bool, id: int, operating_id: int, sent_id_id: int,  mes: str):
+async def send_notification(is_another_user: bool, id: int, mes: str):
     """
     is_another_user: bool, - Работает ли НЕ с собой
-    id: int - Передавать id кому отправить
-    operating_id: int - ID с пользователем кто отправляет
     sent_id_id: int - ID кому собираеться отправлять
     mes: str - Сообщение
     """

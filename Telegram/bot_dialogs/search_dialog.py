@@ -83,7 +83,7 @@ async def enter_user(event, widget, manager: DialogManager, **kwargs):
 
     info_me = get_line_userinfo(manager.event.from_user.id)
     card = get_line_user(data)
-    await send_notification(False, manager.event.from_user.id, manager.event.from_user.id, data, f'''Вы выбрали @{info[2]}
+    await send_notification(False, manager.event.from_user.id, f'''Вы выбрали @{info[2]}
     {card[2]} - {card[3]}
 Основной инструмент - {card[5]}
 Дополнительный инструмент - {card[6]}
@@ -106,7 +106,7 @@ async def enter_user(event, widget, manager: DialogManager, **kwargs):
             card[6] = i.name
     card = tuple(card)
 
-    await send_notification(True, data, manager.event.from_user.id, data, f'''Вас выбрал @{info_me[2]}
+    await send_notification(True, data, f'''Вас выбрал @{info_me[2]}
 {card[2]} - {card[3]}
 Основной инструмент - {card[5]}
 Дополнительный инструмент - {card[6]}
