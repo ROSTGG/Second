@@ -56,7 +56,10 @@ def get_line_userinfo(TgId: int):
     cursor.execute('SELECT * FROM Clients WHERE tg_id = ?', (TgId,))
     data = cursor.fetchall()
     bd.close()
-    return data[0]
+    try:
+        return data[0]
+    except:
+        return data
 def get_line_userinfo_username(username: str):
     bd = sql.connect('Telegram/data/second_user_info.SQLite')
     cursor = bd.cursor()
@@ -73,9 +76,24 @@ def update_line_userinfo(tg_id: int, user_name: str, black_list: list):
     except:
         black_list = 'NOT'
     cursor = bd.cursor()
-    cursor.execute(
-        'UPDATE Clients SET user_name = ?,  black_list = ?  WHERE tg_id = ?',
-        (user_name, black_list, tg_id))
+    cursor.execute("SELECT user_name FROM Clients WHERE tg_id = ?", (tg_id,))
+    data = cursor.fetchall()
+    if len(data) == 0:
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS Clients (
+        id INTEGER PRIMARY KEY,
+        tg_id INTEGER NOT NULL,
+        user_name TEXT NOT NULL,
+        black_list TEXT NOT NULL)''')
+        cursor.execute('INSERT INTO Clients (tg_id, user_name, black_list) VALUES (?, ?, ?)',
+                       (tg_id, user_name, black_list))
+    else:
+        cursor.execute(
+            'UPDATE Clients SET user_name = ?,  black_list = ?  WHERE tg_id = ?',
+            (user_name, black_list, tg_id))
+    # cursor.execute(
+    #     'UPDATE Clients SET user_name = ?,  black_list = ?  WHERE tg_id = ?',
+    #     (user_name, black_list, tg_id))
     bd.commit()
     bd.close()
 def delete_line_userinfo(tg_id: int):

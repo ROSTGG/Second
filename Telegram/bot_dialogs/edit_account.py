@@ -196,18 +196,6 @@ async def result_getter(dialog_manager: DialogManager, **kwargs):
     else:
         data[7] = "Нет"
 
-    # if data[4] == "True": item_id = True
-    # elif item_id == "False": item_id = False
-    # print("user getter")
-    # print(f"name: {data[2]}\n"
-    #       f"city: {data[3]}\n"
-    #       f"genre: {data[4]}\n"
-    #       f"first_instrument: {data[5]}\n"
-    #       f"choice_instrument: {data[6]}\n"
-    #       f"choice: {data[7]}\n"
-    #       f"experience: {data[8]}\n"
-    #       f"description: {data[9]}\n"
-    #       f"link: {data[10]}\n")
     return {
         "name": data[2],
         "city": data[3],
@@ -219,18 +207,7 @@ async def result_getter(dialog_manager: DialogManager, **kwargs):
         "description": data[9],
         "link": data[10],
     }
-    # return {
-    #     "name": dialog_manager.dialog_data.get(t_data_name),
-    #     "city": dialog_manager.dialog_data.get(t_data_city),
-    #     "genre": dialog_manager.dialog_data.get(t_data_genre),
-    #     "first_instrument": dialog_manager.dialog_data.get(t_data_first_instrument),
-    #     "choice_instrument": dialog_manager.dialog_data.get(t_data_choice_instrument),
-    #     "choice": dialog_manager.dialog_data.get(t_data_choice),
-    #     "experience": dialog_manager.dialog_data.get(t_data_experience),
-    #     "description": dialog_manager.dialog_data.get(t_data_description),
-    #     "link": dialog_manager.dialog_data.get(t_data_link),
-    # }
-    #
+
 
 async def EditAccount_user(callback: CallbackQuery, widj, dialog_manager: DialogManager, **kwargs):
     print("Пользоваетль начал обновление")

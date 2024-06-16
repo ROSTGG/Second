@@ -4,14 +4,21 @@ import Telegram.bd_functions.db_user_info as bui
 
 def add_users(tg_id, tg_id_persons: list):
     data = bui.get_line_userinfo(tg_id)
-    black_list = str(data[4]).split('.')
+    black_list = str(data[3]).split('.')
+    # black_list = []
     for i in tg_id_persons:
         ans = str(i)
         if i not in black_list:
             black_list.append(str(i))
-    black_list = '.'.join(black_list)
     print(black_list)
-    bui.update_line_userinfo(tg_id, data[2], data[3], black_list)
+    # black_list = '.'.join(black_list)
+    # print(black_list)
+    try:
+        black_list.remove("NOT")
+    except:
+        pass
+    print(black_list)
+    bui.update_line_userinfo(tg_id, data[2], black_list)
     return True
 
 
@@ -22,6 +29,7 @@ def delete_users(tg_id, tg_id_persons):
     for tg_id_person in tg_id_persons:
         try:
             black_list.remove(str(tg_id_person))
+            bui.delete_line_userinfo(tg_id_person)
         except:
             pass
     return True
