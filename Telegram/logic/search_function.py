@@ -1,5 +1,6 @@
 from Telegram.bot_dialogs.data import *
 from Telegram.logic.black_list_logic import is_check_user_BL
+from Telegram.common_function import name_city
 
 
 @dataclass
@@ -93,7 +94,7 @@ def form(card):
         if i.id == card[6]:
             card[6] = i.name
     card = tuple(card)
-    data = Ibdstr(card[1],f'''{card[2]} - {card[3]}
+    data = Ibdstr(card[1],f'''{card[2]} - {name_city(card[3])}
 Основной инструмент - {card[5]}
 Дополнительный инструмент - {card[6]}
 Стаж -  годов - {card[8].split(".")[0]},  месяцев - {card[8].split(".")[1]}

@@ -7,6 +7,7 @@ from aiogram_dialog.widgets.kbd import Button, SwitchTo, Column, Select, Start, 
 from aiogram_dialog.widgets.markup.reply_keyboard import ReplyKeyboardFactory, MarkupFactory
 from aiogram_dialog.widgets.text import Const, Format
 from aiogram import Bot, Dispatcher, types, Router, F
+from Telegram.common_function import name_city
 
 from Telegram.bot_dialogs.data import *
 from Telegram.bot_dialogs.getter import getter_profil
@@ -198,7 +199,7 @@ async def result_getter(dialog_manager: DialogManager, **kwargs):
 
     return {
         "name": data[2],
-        "city": data[3],
+        "city": name_city(data[3]),
         "genre": data[4],
         "first_instrument": data[5],
         "choice_instrument": data[6],
