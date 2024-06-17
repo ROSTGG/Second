@@ -1,14 +1,17 @@
+from datetime import datetime
+
 from aiogram_dialog import Window, DialogManager
 from aiogram_dialog.widgets.kbd import Button, Column, Select, NextPage, PrevPage, Row
 
 from Telegram.bot import send_notification
+from Telegram.common_function import name_city
 from Telegram.enter_bot_value import bot
 from Telegram.bd_functions.bd import Session, get_line_user
 from Telegram.bot_dialogs.common import MAIN_MENU_BUTTON
 from Telegram.bot_dialogs.data import *
 from Telegram.bot_dialogs.getter import getter_profil
 from Telegram.bot_dialogs.states import Search_m
-from Telegram.bd_functions.db_user_info import get_line_userinfo
+from Telegram.bd_functions.db_user_info import get_line_userinfo, update_line_userinfo
 from Telegram.logic.search_function import search, Ibdstr
 from aiogram_dialog.widgets.text import Const, Format, List
 
@@ -72,19 +75,30 @@ async def getter_one(dialog_manager: DialogManager, **kwargs):
             data
     }
 async def enter_user(event, widget, manager: DialogManager, **kwargs):
-    widget = manager.find('scroll_no_pager')
-    # print(await widget.get_page())
-    data = temp_id[manager.event.from_user.id][await widget.get_page()]
-    # print(data)
-    # print(manager.event.from_user)
-    info = get_line_userinfo(data)
-    # info = get_line_userinfo(manager.event.from_user.id)
-    # await manager.answer_callback()
+    data_line = get_line_userinfo(manager.event.from_user.id)
+    wait_time = 10
+    difference_second = int((datetime.now() - datetime.strptime(data_line[4], '%Y-%m-%d %H:%M:%S')).total_seconds())
+    # print("data_line -", data_line)
+    # print("difference_second -", difference_second)
+    time_now = datetime.now()
+    # print("time_now.strftime('%Y-%m-%d %H:%M:%S') -", time_now.strftime('%Y-%m-%d %H:%M:%S'))
+    if difference_second <= 1:
+        await bot.send_message(manager.event.from_user.id, "НЕ надо спамить, с*ка")
+    elif difference_second >= wait_time:
+        update_line_userinfo(data_line[1], data_line[2], data_line[3], time_now.strftime('%Y-%m-%d %H:%M:%S'))
+        widget = manager.find('scroll_no_pager')
+        # print(await widget.get_page())
+        data = temp_id[manager.event.from_user.id][await widget.get_page()]
+        # print(data)
+        # print(manager.event.from_user)
+        info = get_line_userinfo(data)
+        # info = get_line_userinfo(manager.event.from_user.id)
+        # await manager.answer_callback()
 
-    info_me = get_line_userinfo(manager.event.from_user.id)
-    card = get_line_user(data)
-    await send_notification(False, manager.event.from_user.id, f'''Вы выбрали @{info[2]}
-    {card[2]} - {card[3]}
+        info_me = get_line_userinfo(manager.event.from_user.id)
+        card = get_line_user(data)
+        await send_notification(False, manager.event.from_user.id, f'''Вы выбрали @{info[2]}
+{card[2]} - {name_city(card[3])}
 Основной инструмент - {card[5]}
 Дополнительный инструмент - {card[6]}
 Стаж -  годов - {card[8].split(".")[0]},  месяцев - {card[8].split(".")[1]}
@@ -92,22 +106,22 @@ async def enter_user(event, widget, manager: DialogManager, **kwargs):
 О себе - "{card[9]}"
 Ссылка на публичную страницу - {card[10]}''')
 
-    datas = getter_data_dict
-    card = get_line_user(manager.event.from_user.id)
-    card = list(card)
-    for i in datas[genre_KEY]:
-        if i.id == card[4]:
-            card[4] = i.name
-    for i in datas[Instrument_KEY]:
-        if i.id == card[5]:
-            card[5] = i.name
-    for i in datas[Instrument_KEY]:
-        if i.id == card[6]:
-            card[6] = i.name
-    card = tuple(card)
+        datas = getter_data_dict
+        card = get_line_user(manager.event.from_user.id)
+        card = list(card)
+        for i in datas[genre_KEY]:
+            if i.id == card[4]:
+                card[4] = i.name
+        for i in datas[Instrument_KEY]:
+            if i.id == card[5]:
+                card[5] = i.name
+        for i in datas[Instrument_KEY]:
+            if i.id == card[6]:
+                card[6] = i.name
+        card = tuple(card)
 
-    await send_notification(True, data, f'''Вас выбрал @{info_me[2]}
-{card[2]} - {card[3]}
+        await send_notification(True, data, f'''Вас выбрал @{info_me[2]}
+{card[2]} - {name_city(card[3])}
 Основной инструмент - {card[5]}
 Дополнительный инструмент - {card[6]}
 Стаж -  годов - {card[8].split(".")[0]},  месяцев - {card[8].split(".")[1]}
@@ -115,6 +129,10 @@ async def enter_user(event, widget, manager: DialogManager, **kwargs):
 О себе - "{card[9]}"
 Ссылка на публичную страницу - {card[10]}
     ''')
+    else:
+        await bot.send_message(manager.event.from_user.id,
+                           f"Пожалуйста, НЕ надо спамить, Следуйщий запрос можно запросить через "
+                           f"{int(wait_time - (datetime.now() - datetime.strptime(data_line[4], '%Y-%m-%d %H:%M:%S')).total_seconds())} секунды")
 
 
 window_one = Window(

@@ -5,10 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d628920e-59fa-4f69-962f-ac51c7353f78" name="Changes" comment="BLACK LIST 3">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/88b08c06-7898-4962-9a87-3e76511d1b04.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/88b08c06-7898-4962-9a87-3e76511d1b04/storage_v2/_src_/schema/main.uQUzAA.meta" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Telegram/bd_functions/db_user_info.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bd_functions/db_user_info.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Telegram/bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bot.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Telegram/bot_dialogs/common.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bot_dialogs/common.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Telegram/bot_dialogs/register.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bot_dialogs/register.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Telegram/bot_dialogs/search_dialog.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/bot_dialogs/search_dialog.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Telegram/data/second_user_info.SQLite" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/data/second_user_info.SQLite" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Telegram/data/second.SQLite" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/data/second.SQLite" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Telegram/data/second_user_info.SQLite" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Telegram/logic/black_list_logic.py" beforeDir="false" afterPath="$PROJECT_DIR$/Telegram/logic/black_list_logic.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,7 +59,7 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 6
+  &quot;associatedIndex&quot;: 4
 }</component>
   <component name="ProjectId" id="2eHwj70dF3gmUauszfczPJFRSl4" />
   <component name="ProjectViewState">
@@ -233,7 +242,9 @@
       <workItem from="1718279865900" duration="6660000" />
       <workItem from="1718358771986" duration="5115000" />
       <workItem from="1718430671851" duration="1223000" />
-      <workItem from="1718521898330" duration="1836000" />
+      <workItem from="1718521898330" duration="4966000" />
+      <workItem from="1718553849904" duration="427000" />
+      <workItem from="1718629782779" duration="3152000" />
     </task>
     <task id="LOCAL-00001" summary="ROSTPC_0.0.16">
       <option name="closed" value="true" />
@@ -470,7 +481,7 @@
     <SUITE FILE_PATH="coverage/_Second_$Bot.coverage" NAME="Bot Coverage Results" MODIFIED="1713111870360" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/Second$search_py.coverage" NAME="search.py Coverage Results" MODIFIED="1712594511533" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Telegram/outher_function" />
     <SUITE FILE_PATH="coverage/Second$black_list_logic.coverage" NAME="black_list_logic Coverage Results" MODIFIED="1713187701681" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Telegram/logic" />
-    <SUITE FILE_PATH="coverage/Second$Bot.coverage" NAME="Bot Coverage Results" MODIFIED="1718523876527" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/Second$Bot.coverage" NAME="Bot Coverage Results" MODIFIED="1718632903712" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/Second$search.coverage" NAME="search Coverage Results" MODIFIED="1712599724782" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Telegram" />
     <SUITE FILE_PATH="coverage/Second$bd_connections.coverage" NAME="bd_connections Coverage Results" MODIFIED="1713120667072" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Telegram" />
     <SUITE FILE_PATH="coverage/Second$start_bot.coverage" NAME="start bot Coverage Results" MODIFIED="1712008204463" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />

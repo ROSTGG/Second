@@ -60,7 +60,7 @@ print(max(x))
 async def step_name(callback: CallbackQuery, widget, dialog_manager: DialogManager,item_id: str, *_):
     # dialog_manager.dialog_data[choice_KEY] = item_id
     if len(item_id) <= 30:
-        create_row_userinfo(dialog_manager.event.from_user.id, dialog_manager.event.from_user.username,  [])
+        create_row_userinfo(dialog_manager.event.from_user.id, dialog_manager.event.from_user.username,  [], "2023-05-24 12:30:45")
         try:
             dialog_manager.dialog_data[Data_update_list][1] = item_id
         except Exception as e:

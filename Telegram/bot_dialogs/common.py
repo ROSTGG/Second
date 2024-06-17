@@ -1,7 +1,11 @@
+from datetime import datetime
+
 from aiogram.exceptions import TelegramForbiddenError
 from aiogram_dialog.widgets.kbd import Start
 from aiogram_dialog.widgets.text import Const
 from aiogram_dialog import Dialog, LaunchMode, Window, DialogManager, StartMode
+
+from Telegram.bd_functions.db_user_info import get_line_userinfo, update_line_userinfo
 from Telegram.bot_dialogs import states
 from Telegram.bot_dialogs.data import bot_notification
 from Telegram.bot_dialogs.states import DontWorked
@@ -16,6 +20,10 @@ async def send_notification(is_another_user: bool, id: int, mes: str):
     mes: str - Сообщение
     """
     # проверка на регистрацию в боте увдомлений
+    # data = get_line_userinfo(id)
+    # print((datetime.now() - datetime.strptime(data[4], '%Y-%m-%d %H:%M:%S')).total_seconds())
+    # print(datetime.now().total_seconds())
+    # print(datetime.strptime(get_line_userinfo(id)[4], '%Y-%m-%d %H:%M:%S'))
     if is_check_user_BL:
         try:
             await bot_notification.send_message(id, mes)
@@ -26,6 +34,7 @@ async def send_notification(is_another_user: bool, id: int, mes: str):
                 await bot.send_message(id, "Для продолжения запустите или разблокируйте бота https://t.me/notif_second_bot")
     else:
         await bot.send_message(id, "Вас заблокировали! ⛔️")
+
 
 MAIN_MENU_BUTTON = Start(
     text=Const("☰ Main menu"),

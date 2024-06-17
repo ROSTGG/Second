@@ -1,3 +1,4 @@
+import datetime
 from typing import List
 
 import Telegram.bd_functions.db_user_info as bui
@@ -18,7 +19,10 @@ def add_users(tg_id, tg_id_persons: list):
     except:
         pass
     print(black_list)
-    bui.update_line_userinfo(tg_id, data[2], black_list)
+    now = datetime.datetime.now()
+    now_str = now.isoformat()
+    print(now_str)
+    bui.update_line_userinfo(tg_id, data[2], black_list, event_datatime=now_str)
     return True
 
 

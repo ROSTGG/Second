@@ -53,14 +53,14 @@ async def start(callback: CallbackQuery, dialog_manager: DialogManager):
             await clear_chat(dialog_manager)
             print("isRegisterUser = True")
             update_line_userinfo(tg_id=dialog_manager.event.from_user.id,
-                                 user_name=dialog_manager.event.from_user.username, black_list=[0])
+                                 user_name=dialog_manager.event.from_user.username, black_list=[0], event_datatime="2023-05-24 12:30:45")
             await dialog_manager.start(Menu.MAIN, mode=StartMode.RESET_STACK)
         else:
             await clear_chat(dialog_manager)
             await dialog_manager.done()
             print("isRegisterUser = False")
             update_line_userinfo(tg_id=dialog_manager.event.from_user.id,
-                                 user_name=dialog_manager.event.from_user.username, black_list=[0])
+                                 user_name=dialog_manager.event.from_user.username, black_list=[0], event_datatime="2023-05-24 12:30:45")
             await dialog_manager.start(Register.notif_bot, mode=StartMode.RESET_STACK)
     except Exception as e:
         print(e)
@@ -98,7 +98,7 @@ async def on_unknown_intent(event: ErrorEvent, dialog_manager: DialogManager):
         if isRegisterUser(event.update.callback_query.from_user.id):
             update_line_userinfo(tg_id=event.update.callback_query.from_user.id,
                                  user_name=event.update.callback_query.from_user.username,
-                                 black_list=[0])
+                                 black_list=[0], event_datatime="2023-05-24 12:30:45")
             await dialog_manager.start(Menu.MAIN, mode=StartMode.RESET_STACK)
         else:
             await dialog_manager.start(Register.notif_bot, mode=StartMode.RESET_STACK)

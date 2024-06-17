@@ -25,7 +25,12 @@
         </introspection-scope>
       </schema-mapping>
     </data-source>
-    <data-source name="second_user_info" uuid="88b08c06-7898-4962-9a87-3e76511d1b04">
+    <data-source name="second" uuid="1ef880ce-603f-499d-86d1-6f7e079c28df">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="SQLITE" />
+      <auth-provider>no-auth</auth-provider>
+      <schema-mapping />
+    </data-source>
+    <data-source name="second_user_info" uuid="3ce36eac-1e6a-4e79-afc0-b104b510a4cb">
       <database-info product="SQLite" version="3.45.1" jdbc-version="4.2" driver-name="SQLite JDBC" driver-version="3.45.1.0" dbms="SQLITE" exact-version="3.45.1" exact-driver-version="3.45">
         <identifier-quote-string>&quot;</identifier-quote-string>
       </database-info>
@@ -36,11 +41,6 @@
           <node kind="schema" qname="@" />
         </introspection-scope>
       </schema-mapping>
-    </data-source>
-    <data-source name="second" uuid="1ef880ce-603f-499d-86d1-6f7e079c28df">
-      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="SQLITE" />
-      <auth-provider>no-auth</auth-provider>
-      <schema-mapping />
     </data-source>
   </component>
 </project>
