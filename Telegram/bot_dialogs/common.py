@@ -24,16 +24,13 @@ async def send_notification(is_another_user: bool, id: int, mes: str):
     # print((datetime.now() - datetime.strptime(data[4], '%Y-%m-%d %H:%M:%S')).total_seconds())
     # print(datetime.now().total_seconds())
     # print(datetime.strptime(get_line_userinfo(id)[4], '%Y-%m-%d %H:%M:%S'))
-    if is_check_user_BL:
-        try:
-            await bot_notification.send_message(id, mes)
-        except TelegramForbiddenError as err:
-            if is_another_user:
-                pass
-            else:
-                await bot.send_message(id, "Для продолжения запустите или разблокируйте бота https://t.me/notif_second_bot")
-    else:
-        await bot.send_message(id, "Вас заблокировали! ⛔️")
+    try:
+        await bot_notification.send_message(id, mes)
+    except TelegramForbiddenError as err:
+        if is_another_user:
+            pass
+        else:
+            await bot.send_message(id, "Для продолжения запустите или разблокируйте бота https://t.me/notif_second_bot")
 
 
 MAIN_MENU_BUTTON = Start(

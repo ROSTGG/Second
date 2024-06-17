@@ -19,9 +19,13 @@ bot = bot
 temp_instrument = {}
 temp_id = {}
 temp_id_user_info = None
+
+
 # bot = Bot(token="6752526100:AAFCSA3zE7LTV88AP68ozKPd90DxJ14Upks")
 def id_getter(istr: Ibdstr) -> str:
     return istr.id
+
+
 # json_file_path = "temp_instrument.json"
 # Функция для записи данных в JSON файл
 # def load_json(file_name):
@@ -56,6 +60,8 @@ async def step_set_instrument(event, widget, dialog_manager: DialogManager, item
 
 
 session = Session('Telegram/data')
+
+
 async def getter_one(dialog_manager: DialogManager, **kwargs):
     data = search(temp_instrument[dialog_manager.event.from_user.id], dialog_manager.event.from_user.id)
     temp = []
@@ -67,23 +73,25 @@ async def getter_one(dialog_manager: DialogManager, **kwargs):
 
     return {
         find_user_KEY:
-            # Ibdstr("132121351", "dfiogjdiojsgi"),
-            # Ibdstr("132121351", "dfiogjdiojsgi"),
-            # Ibdstr("132121351", "dfiogjdiojsgi"),
-            # Ibdstr("132121351", "dfiogjdiojsgi")
+        # Ibdstr("132121351", "dfiogjdiojsgi"),
+        # Ibdstr("132121351", "dfiogjdiojsgi"),
+        # Ibdstr("132121351", "dfiogjdiojsgi"),
+        # Ibdstr("132121351", "dfiogjdiojsgi")
 
             data
     }
+
+
 async def enter_user(event, widget, manager: DialogManager, **kwargs):
     data_line = get_line_userinfo(manager.event.from_user.id)
-    wait_time = 10
+    wait_time = 120
     difference_second = int((datetime.now() - datetime.strptime(data_line[4], '%Y-%m-%d %H:%M:%S')).total_seconds())
     # print("data_line -", data_line)
     # print("difference_second -", difference_second)
     time_now = datetime.now()
     # print("time_now.strftime('%Y-%m-%d %H:%M:%S') -", time_now.strftime('%Y-%m-%d %H:%M:%S'))
-    if difference_second <= 1:
-        await bot.send_message(manager.event.from_user.id, "НЕ надо спамить, с*ка")
+    if difference_second <= 2:
+        await send_notification(False, manager.event.from_user.id, "НЕ надо спамить, с*ка")
     elif difference_second >= wait_time:
         update_line_userinfo(data_line[1], data_line[2], data_line[3], time_now.strftime('%Y-%m-%d %H:%M:%S'))
         widget = manager.find('scroll_no_pager')
@@ -130,24 +138,24 @@ async def enter_user(event, widget, manager: DialogManager, **kwargs):
 Ссылка на публичную страницу - {card[10]}
     ''')
     else:
-        await bot.send_message(manager.event.from_user.id,
-                           f"Пожалуйста, НЕ надо спамить, Следуйщий запрос можно запросить через "
-                           f"{int(wait_time - (datetime.now() - datetime.strptime(data_line[4], '%Y-%m-%d %H:%M:%S')).total_seconds())} секунды")
+        await send_notification(False, manager.event.from_user.id,
+                                f"Пожалуйста, НЕ надо спамить, Следуйщий запрос можно запросить через "
+                                f"{int(wait_time - (datetime.now() - datetime.strptime(data_line[4], '%Y-%m-%d %H:%M:%S')).total_seconds())} секунды")
 
 
 window_one = Window(
     Const("Выберете инcтрумент:"),
     Column(
-    Select(
-        text=Format("{item.emoji} {item.name}"),
-        id="first_instrument",
-        items=Instrument_KEY,
-        # Alternatives:
-        # items=lambda d: d[OTHER_KEY][FRUITS_KEY],  # noqa: E800
-        # items=F[OTHER_KEY][FRUITS_KEY],  # noqa: E800
-        item_id_getter=id_getter,
-        on_click=step_set_instrument,
-    )),
+        Select(
+            text=Format("{item.emoji} {item.name}"),
+            id="first_instrument",
+            items=Instrument_KEY,
+            # Alternatives:
+            # items=lambda d: d[OTHER_KEY][FRUITS_KEY],  # noqa: E800
+            # items=F[OTHER_KEY][FRUITS_KEY],  # noqa: E800
+            item_id_getter=id_getter,
+            on_click=step_set_instrument,
+        )),
     MAIN_MENU_BUTTON,
     getter=getter_profil,
     preview_data=getter_profil,
