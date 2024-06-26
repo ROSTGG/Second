@@ -276,7 +276,7 @@ user_data = {}
 city_window = Window(
     Const("Отправьте вашу геолокацию с помощью кнопки ниже!"),
     RequestLocation(Const("📍 Send location")),
-    MessageInput(step_city, content_types=ContentType.LOCATION),
+    MessageInput(step_city, content_types=[ContentType.LOCATION]),
     # TextInput(id="city", on_success=step_city),
     CANCEL_EDIT,
     markup_factory=ReplyKeyboardFactory(
@@ -410,7 +410,7 @@ exit_window = Window(
         state=EditAccount.name, id="to_name",
     ),
     SwitchTo(
-        Const("Изменить город"),
+        Const("Изменить месторасположение"),
         state=EditAccount.city, id="to_city",
     ),
     SwitchTo(

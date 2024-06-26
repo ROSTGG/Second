@@ -54,8 +54,8 @@ async def get_call_data(dialog_manager: DialogManager, **kwargs):
 #     data = get_line_user(callback.from_user.id)
 #     dialog_manager.dialog_data[Data_update_list] = data
 #     await dialog_manager.start(Register.preview)
-x = "abc"
-print(max(x))
+# x = "abc"
+# print(max(x))
 
 async def step_name(callback: CallbackQuery, widget, dialog_manager: DialogManager,item_id: str, *_):
     # dialog_manager.dialog_data[choice_KEY] = item_id
