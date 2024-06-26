@@ -1,3 +1,3 @@
-from Telegram.bot_dialogs.data import bot_for_test
+from Telegram.bot_dialogs.data import *
 
-bot = bot_for_test
+bot = bot_main
