@@ -176,7 +176,7 @@ class TelegramHandler(logging.Handler):
         """
         try:
             message = self.format(record)
-            self.send_message_to_telegram(message)
+            # self.send_message_to_telegram(message)
         except RecursionError:
             raise
         except Exception:
